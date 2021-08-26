@@ -6,13 +6,17 @@ from random import *
 random = Random()
 pygame.init()
 
+# Font
+pygame.font.init()
+font = pygame.font.SysFont("Comic Sans MS", 30)
+
 # Display
 size_x = 851  # 17 felder
 size_y = 801  # 15 felder
 surface = pygame.display.set_mode((size_x, size_y))
 
 # Colors
-lineColor = (0, 0, 0)
+lineColor = (120, 150, 200)
 backgroundColor = (140, 177, 217)
 snakeColor = (230, 138, 0)
 appleColor = (255, 0, 0)
@@ -31,19 +35,34 @@ def resetBackground():
         pygame.draw.line(surface, lineColor, (0, (i * 50) + 50), (850, (i * 50) + 50), width=1)
     for i in range(19):
         pygame.draw.line(surface, lineColor, ((i * 50), 50), ((i * 50), 800), width=1)
-    pygame.display.flip()
 
+    # Score
+    surface.blit(font.render("Score: " + str(score), True, (100, 100, 100)), (10, 2))
+
+    pygame.display.flip()
 
 def drawSnake():
     # Snake Head
-    pygame.draw.rect(surface, snakeColor, ((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 49, 49))
+    pygame.draw.rect(surface, snakeColor, ((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50))
 
     # Snake Body
     for i in reversed(range(len(snakeTailX))):
         tempX = snakeTailX[i]
         tempY = snakeTailY[i]
 
-        pygame.draw.rect(surface, snakeColor, ((tempX * 50 + 1), (tempY * 50 + 51), 49, 49))
+        # Snake Color
+        if i <= 17:
+            snakeTailColor = (230, 138, 0+i*15)
+        elif 27 >= i > 17:
+            snakeTailColor = (230, 138-(i-17)*10, 255)
+        elif 42 >= i > 27:
+            snakeTailColor = (230-(i-27)*15, 8, 255)
+        elif 93 >= i > 42:
+            snakeTailColor = (5, 8, 255-(i-42)*5)
+        else:
+            snakeTailColor = (5, 8, 0)
+        pygame.draw.rect(surface, snakeTailColor, ((tempX * 50 + 1), (tempY * 50 + 51), 50, 50))
+        #pygame.draw.rect(surface, snakeColor, ((tempX * 50 + 1 + i/2), (tempY * 50 + 51 + i/2), 49-i, 49-i))
 
     # "Eyes"
     if direction == "right":
@@ -65,7 +84,6 @@ def drawApple():
     pygame.display.flip()
 
 
-
 def moveSnakeForward():
     global snakeHeadX
     global snakeHeadY
@@ -73,7 +91,7 @@ def moveSnakeForward():
     global snakeTailY
     global run
 
-    # Move Body Forward   MAYBE + 1 V
+    # Move Body Forward
     for i in reversed(range(len(snakeTailX))):
         if i != 0:
             snakeTailX[i] = snakeTailX[i - 1]
@@ -92,24 +110,22 @@ def moveSnakeForward():
     if direction == "down":
         snakeHeadY += 1
 
-    # Collision check
-    if snakeHeadX > 17:
-        pygame.quit()
-        run = False
+
+def doCollisionCheck():
+    global run
+
+    if snakeHeadX > 16:
+        return True
     elif snakeHeadX < 0:
-        pygame.quit()
-        run = False
-    elif snakeHeadY > 15:
-        pygame.quit()
-        run = False
+        return True
+    elif snakeHeadY > 14:
+        return True
     elif snakeHeadY < 0:
-        pygame.quit()
-        run = False
-    for i in range(len(snakeTailX)):
-        for j in range(len(snakeTailY)):
-            if snakeHeadX == snakeTailX and snakeHeadY == snakeBodyY:
-                pygame.quit()
-                run = False
+        return True
+    for a in range(0, len(snakeTailX), 1):
+        if snakeTailX[a] == snakeHeadX and snakeTailY[a] == snakeHeadY:
+            return True
+    return False
 
 
 # Main Loop
@@ -163,8 +179,16 @@ while run:
             if applesX[i] == "":
                 tempAppleX = random.randint(0, 16)
                 tempAppleY = random.randint(0, 14)
-                applesX[i] = tempAppleX
-                applesY[i] = tempAppleY
+                for j in range(len(snakeTailX)+1):
+                    if tempAppleX != snakeTailX[j-1] and tempAppleY != snakeTailY[j-1]:
+                        if tempAppleX != snakeHeadX and tempAppleY != snakeHeadY:
+                            applesX[i] = tempAppleX
+                            applesY[i] = tempAppleY
+                            print("lol")
+                        else:
+                            i -= 1
+                            print("lmao")
+
 
     # Apple Checker
     for i in range(len(applesX)):
@@ -174,44 +198,27 @@ while run:
                 applesY[j] = ""
                 score += 1
                 numApplesInGame = 0
+                # Make Snake Grow
+                snakeTailX.append(oldX)
+                snakeTailY.append(oldY)
 
-    # Collision check
-    if snakeHeadX > 17:
-        pygame.quit()
+    if not doCollisionCheck():
+        drawApple()
+        drawSnake()
+        # Timer (https://www.programiz.com/python-programming/time)
+        elapsedTime = time.time() - startTime
+        if elapsedTime > 0.2:
+            idk = True
+            startTime = time.time()
+
+            # Remember Last Tail Position
+            oldX = snakeTailX[len(snakeTailX)-1]
+            oldY = snakeTailY[len(snakeTailY)-1]
+
+            resetBackground()
+            moveSnakeForward()
+    elif doCollisionCheck():
         run = False
-        break
-    elif snakeHeadX < 0:
-        pygame.quit()
-        run = False
-        break
-    elif snakeHeadY > 15:
-        pygame.quit()
-        run = False
-        break
-    elif snakeHeadY < 0:
-        pygame.quit()
-        run = False
-        break
-    for i in range(len(snakeTailX)):
-        for j in range(len(snakeTailY)):
-            if snakeHeadX == snakeTailX and snakeHeadY == snakeBodyY:
-                pygame.quit()
-                run = False
-
-
-
-
-    # Timer (https://www.programiz.com/python-programming/time)
-    elapsedTime = time.time() - startTime
-    if elapsedTime > 0.3:
-        idk = True
-        startTime = time.time()
-        resetBackground()
-        moveSnakeForward()
-
-
-    drawApple()
-    drawSnake()
 
     pygame.display.flip()
 
