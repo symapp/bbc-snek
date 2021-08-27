@@ -22,26 +22,26 @@ snakeColor = (230, 138, 0)
 appleColor = (255, 0, 0)
 white = (255, 255, 255)
 
-# Snake
-snakeTailX = [4, 3, 2, 1]
-snakeTailY = [7, 7, 7, 7]
-snakeHeadX = 5
-snakeHeadY = 7
+# Fonts
+fontSize = 100
+mainFont = pygame.font.SysFont("Uni Sans", fontSize)
+snekFont = pygame.font.SysFont("Uni Sans", 100)
 
 # Functions
 def resetMainScreen():
-    return
+    surface.fill(backgroundColor)
+    surface.blit(mainFont.render("welcome to", True, (54, 57, 59)), (80, 120))
+    surface.blit(snekFont.render("snek", True, (255, 220, 255)), (80, 200))
+    pygame.display.flip()
+    time.sleep(1)
 
 
 def showScore():
-    mouse = pygame.mouse.get_pos()
-
-
 
     for i in range(500):
         surface.fill(backgroundColor)
         fontBigScore = pygame.font.SysFont("Uni Sans", int(50 + i/10))
-        surface.blit(fontBigScore.render("Score: " + str(score), True, (100, 100, 100)), (10+i*0.48, 10+i*0.38))
+        surface.blit(fontBigScore.render("Score: " + str(score), True, (54, 57, 59)), (10+i*0.48, 10+i*0.38))
         pygame.display.flip()
 
     font = pygame.font.SysFont("Uni Sans", 50)
@@ -49,8 +49,10 @@ def showScore():
         surface.fill(backgroundColor)
         mouse = pygame.mouse.get_pos()
         fontBigScore = pygame.font.SysFont("Uni Sans", 100)
-        surface.blit(fontBigScore.render("Score: " + str(score), True, (100, 100, 100)), (250, 200))
+        surface.blit(fontBigScore.render("Score: " + str(score), True, (54, 57, 59)), (250, 200))
+
         if 400 < mouse[1] < 500 and 300 < mouse[0] < 500:
+            pygame.draw.rect(surface, (40, 40, 40), pygame.Rect(300, 400, 210, 110), border_radius=10)
             pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(295, 395, 210, 110), border_radius=10)
             font = pygame.font.SysFont("Uni Sans", 52)
             surface.blit(font.render("Try again", True, (255, 255, 255)), (324, 429))
@@ -59,18 +61,18 @@ def showScore():
                     return
 
         else:
+            pygame.draw.rect(surface, (40, 40, 40), pygame.Rect(305, 405, 200, 100), border_radius=10)
             pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(300, 400, 200, 100), border_radius=10)
             font = pygame.font.SysFont("Uni Sans", 50)
             surface.blit(font.render("Try again", True, (255, 255, 255)), (325, 430))
 
 
-
-
         pygame.display.flip()
 
+        # Makes Sure Screen Continues Responding
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
-                print("lmao")
+                continue
 
 
 def resetBackground():
@@ -81,7 +83,7 @@ def resetBackground():
         pygame.draw.line(surface, lineColor, ((i * 50), 50), ((i * 50), 800), width=1)
 
     # Score
-    surface.blit(font.render("Score: " + str(score), True, (100, 100, 100)), (10, 10))
+    surface.blit(font.render("Score: " + str(score), True, (54, 57, 59)), (10, 10))
 
     #pygame.display.flip()
 
@@ -126,7 +128,6 @@ def drawApple():
     for i in range(numApplesWanted):
         if applesX[i] != "":
             pygame.draw.circle(surface, appleColor, (applesX[i] * 50 + 25, applesY[i] * 50 + 75), 23)
-    #pygame.display.flip()
 
 
 def moveSnakeForward():
@@ -176,8 +177,7 @@ def doCollisionCheck():
 # Main Loop
 while True:
 
-
-
+    resetMainScreen()
 
     run = True
     direction = "right"
@@ -243,8 +243,6 @@ while True:
                                 applesY[i] = tempAppleY
 
 
-
-
         # Apple Checker
         for i in range(len(applesX)):
             for j in range(len(applesY)):
@@ -272,7 +270,7 @@ while True:
             drawSnake()
             # Timer (https://www.programiz.com/python-programming/time)
             elapsedTime = time.time() - startTime
-            if elapsedTime > 0.1:
+            if elapsedTime > 0.3:
                 idk = True
                 startTime = time.time()
 
