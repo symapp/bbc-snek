@@ -24,16 +24,67 @@ white = (255, 255, 255)
 
 # Fonts
 fontSize = 100
-mainFont = pygame.font.SysFont("Uni Sans", fontSize)
-snekFont = pygame.font.SysFont("Uni Sans", 100)
+mainFont = pygame.font.SysFont("", fontSize)
+snekFont = pygame.font.SysFont("", 150)
+playFont = pygame.font.SysFont("", 50)
 
 # Functions
 def resetMainScreen():
     surface.fill(backgroundColor)
-    surface.blit(mainFont.render("welcome to", True, (54, 57, 59)), (80, 120))
-    surface.blit(snekFont.render("snek", True, (255, 220, 255)), (80, 200))
-    pygame.display.flip()
-    time.sleep(1)
+    surface.blit(mainFont.render("Welcome to:", True, (54, 57, 59)), (80, 120))
+    surface.blit(snekFont.render("snek!", True, (155, 120, 155)), (82, 202))
+    surface.blit(snekFont.render("snek!", True, (255, 220, 255)), (80, 200))
+
+
+    active = False
+    text = ""
+    font2 = pygame.font.Font(None, 32)
+    input_box = pygame.Rect(100, 100, 140, 32)
+    color_inactive = pygame.Color("lightskyblue3")
+    color_active = pygame.Color("dodgerblue2")
+    color = color_inactive
+    while True: # https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame
+        surface.fill(backgroundColor)
+        surface.blit(mainFont.render("Welcome to:", True, (54, 57, 59)), (80, 120))
+        surface.blit(snekFont.render("snek!", True, (155, 120, 155)), (82, 202))
+        surface.blit(snekFont.render("snek!", True, (255, 220, 255)), (80, 200))
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if input_box.collidepoint(event.pos):
+                    active = not active
+                else:
+                    active = False
+                color = color_active if active else color_inactive
+            if event.type == pygame.KEYDOWN:
+                if active:
+                    if event.key == pygame.K_RETURN:
+                        print(text)
+                        text = ""
+                    elif event.key == pygame.K_BACKSPACE:
+                        text = text[:-1]
+                    else:
+                        text += event.unicode
+        txt_surface = font2.render(text, True, color)
+
+        width = max(200, txt_surface.get_width()+10)
+        input_box.w = width
+
+        surface.blit(txt_surface, (input_box.x+5, input_box.y+5))
+        pygame.draw.rect(surface, color, input_box, 2)
+
+
+        pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(185, 600, 400, 50), border_radius=10)
+        pygame.draw.rect(surface, (255, 255, 255), pygame.Rect(188, 603, 394, 44), border_radius=10)
+
+        pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(80, 600, 95, 50), border_radius=10)
+        font = pygame.font.SysFont("Uni Sans", 50)
+        surface.blit(playFont.render("Play", True, (255, 255, 255)), (90, 608))
+
+        pygame.display.flip()
+
+
+
 
 
 def showScore():
