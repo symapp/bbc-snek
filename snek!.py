@@ -19,8 +19,16 @@ surface = pygame.display.set_mode((size_x, size_y))
 lineColor = (120, 150, 200)
 backgroundColor = (140, 177, 217)
 snakeColor = (230, 138, 0)
+darkerSnakeColor = (255, 163, 0)
 appleColor = (255, 0, 0)
 white = (255, 255, 255)
+black = (0, 0, 0)
+
+color_apple = (255, 0, 0)
+color_stem = (134, 89, 45)
+color_leaf = (92, 214, 92)
+color_leaf_middle = (32, 154, 32)
+color_highlight_apple = (255, 255, 255)
 
 # Fonts
 fontSize = 100
@@ -41,8 +49,8 @@ def resetMainScreen():
     color_active = (196, 97, 99)
     color = color_inactive
     active = False
-    usernameDone = False
-    highlightPlayButton = False
+    username_done = False
+    highlight_play_button = False
 
     while True:
         # Main Logo
@@ -56,54 +64,63 @@ def resetMainScreen():
         pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(185, 600, 400, 50), border_radius=10)
         pygame.draw.rect(surface, (255, 255, 255), pygame.Rect(188, 603, 394, 44), border_radius=10)
 
-        # Play Button Box
-        if usernameDone:
+        # Play Button Clicked
+        if username_done:
+            # Checks If Username Is Valid + Keeps Username / Writes Message In Input Box
             if username == "":
-                usernameInputColor = (200, 200, 200)
-                txt_surface = font2.render("Pls Username uwu", True, usernameInputColor)
+                username_input_color = (200, 200, 200)
+                txt_surface = font2.render("Pls Username uwu", True, username_input_color)
                 input_box.w = 400
                 surface.blit(txt_surface, (input_box.x + 10, input_box.y + 10))
                 pygame.draw.rect(surface, color, input_box, 4, border_radius=10)
+
             else:
-                usernameInputColor = (54, 57, 59)
-                txt_surface = font2.render(username, True, usernameInputColor)
+                username_input_color = (54, 57, 59)
+                txt_surface = font2.render(username, True, username_input_color)
                 input_box.w = 400
                 surface.blit(txt_surface, (input_box.x + 10, input_box.y + 10))
                 pygame.draw.rect(surface, color, input_box, 4, border_radius=10)
+
+            # Moves Button Down
             pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(80, 600, 95, 50), border_radius=10)
-            playFont = pygame.font.Font(None, 50)
-            surface.blit(playFont.render("Play", True, (255, 255, 255)), (90, 608))
+            play_font = pygame.font.Font(None, 50)
+            surface.blit(play_font.render("Play", True, (255, 255, 255)), (90, 608))
             pygame.display.flip()
             time.sleep(0.3)
+
+            # Moves Button Up
             pygame.draw.rect(surface, (50, 50, 50), pygame.Rect(80, 600, 95, 50), border_radius=10)
             pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(76, 596, 95, 50), border_radius=10)
-            playFont = pygame.font.Font(None, 52)
-            surface.blit(playFont.render("Play", True, (255, 255, 255)), (89, 607))
+            play_font = pygame.font.Font(None, 52)
+            surface.blit(play_font.render("Play", True, (255, 255, 255)), (89, 607))
             pygame.display.flip()
             time.sleep(0.1)
 
             if username != "":
                 return
             else:
-                usernameDone = False
+                username_done = False
 
-
+        # Draws Button
         pygame.draw.rect(surface, (50, 50, 50), pygame.Rect(80, 600, 95, 50), border_radius=10)
         pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(76, 596, 95, 50), border_radius=10)
-        playFont = pygame.font.Font(None, 52)
-        if highlightPlayButton:
-            surface.blit(playFont.render("Play", True, (255, 220, 255)), (89, 607))
-        else:
-            surface.blit(playFont.render("Play", True, (255, 255, 255)), (89, 607))
+        play_font = pygame.font.Font(None, 52)
 
+        # Highlights Button
+        if highlight_play_button:
+            surface.blit(play_font.render("Play", True, (255, 220, 255)), (89, 607))
+        else:
+            surface.blit(play_font.render("Play", True, (255, 255, 255)), (89, 607))
+
+        # Checks If Button Should Be Highlighted
         mouse = pygame.mouse.get_pos()
-        if playBox.collidepoint(mouse) and not usernameDone:
-            highlightPlayButton = True
+        if playBox.collidepoint(mouse) and not username_done:
+            highlight_play_button = True
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    usernameDone = True
+                    username_done = True
         else:
-            highlightPlayButton = False
+            highlight_play_button = False
 
 
         # Input Box -> https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame
@@ -120,7 +137,7 @@ def resetMainScreen():
                     active = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    usernameDone = True
+                    username_done = True
                 if active:
                     if event.key == pygame.K_BACKSPACE:
                         username = username[:-1]
@@ -129,22 +146,17 @@ def resetMainScreen():
                     elif txt_surface.get_width() <= 350 and event.key != pygame.K_RETURN:
                         username += event.unicode
         if username == "" and not active:
-            usernameInputColor = (200, 200, 200)
-            txt_surface = font2.render("Username", True, usernameInputColor)
+            username_input_color = (200, 200, 200)
+            txt_surface = font2.render("Username", True, username_input_color)
         else:
-            usernameInputColor = (54, 57, 59)
-            txt_surface = font2.render(username, True, usernameInputColor)
+            username_input_color = (54, 57, 59)
+            txt_surface = font2.render(username, True, username_input_color)
         input_box.w = 400
         surface.blit(txt_surface, (input_box.x+10, input_box.y+10))
-
-
         pygame.draw.rect(surface, color, input_box, 4, border_radius=10)
 
 
-
         pygame.display.flip()
-
-
 
 
 def showScore():
@@ -202,55 +214,164 @@ def resetBackground():
 
 
 def drawSnake():
-    # Snake Head
-    #pygame.draw.rect(surface, snakeColor, ((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50))
-
-    # Snake Body
     for i in reversed(range(len(snakeTailX))):
-        tempX = snakeTailX[i]
-        tempY = snakeTailY[i]
+        temp_x = snakeTailX[i]
+        temp_y = snakeTailY[i]
 
         # Snake Color
         if i <= 17:
-            snakeTailColor = (230, 138, 0+i*15)
+            snake_tail_color = (230, 138, 0+i*15)
         elif 27 >= i > 17:
-            snakeTailColor = (230, 138-(i-17)*10, 255)
+            snake_tail_color = (230, 138-(i-17)*10, 255)
         elif 42 >= i > 27:
-            snakeTailColor = (230-(i-27)*15, 8, 255)
+            snake_tail_color = (230-(i-27)*15, 8, 255)
         elif 93 >= i > 42:
-            snakeTailColor = (5, 8, 255-(i-42)*5)
+            snake_tail_color = (5, 8, 255-(i-42)*5)
         else:
-            snakeTailColor = (5, 8, 0)
-        pygame.draw.rect(surface, snakeTailColor, ((tempX * 50 + 1), (tempY * 50 + 51), 50, 50))
-        #pygame.draw.rect(surface, snakeColor, ((tempX * 50 + 1 + i/2), (tempY * 50 + 51 + i/2), 49-i, 49-i))
+            snake_tail_color = (5, 8, 0)
+        
+        # Draws Body With Curves If Necessary
+        if i == 0:
+            if snakeHeadX > snakeTailX[i] and snakeHeadY == snakeTailY[i] and snakeTailY[i] < snakeTailY[i+1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_top_left_radius=25)
+            elif snakeHeadX < snakeTailX[i] and snakeHeadY == snakeTailY[i] and snakeTailY[i] < snakeTailY[i+1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_top_right_radius=25)
+            elif snakeHeadX == snakeTailX[i] and snakeHeadY > snakeTailY[i] and snakeTailX[i] > snakeTailX[i+1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_top_right_radius=25)
+            elif snakeHeadX == snakeTailX[i] and snakeHeadY < snakeTailY[i] and snakeTailX[i] > snakeTailX[i+1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_bottom_right_radius=25)
+            elif snakeHeadX == snakeTailX[i] and snakeHeadY > snakeTailY[i] and snakeTailX[i] < snakeTailX[i+1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_top_left_radius=25)
+            elif snakeHeadX == snakeTailX[i] and snakeHeadY < snakeTailY[i] and snakeTailX[i] < snakeTailX[i+1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_bottom_left_radius=25)
+            elif snakeHeadX < snakeTailX[i] and snakeHeadY == snakeTailY[i] and snakeTailY[i] > snakeTailY[i+1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_bottom_right_radius=25)
+            elif snakeHeadX > snakeTailX[i] and snakeHeadY == snakeTailY[i] and snakeTailY[i] > snakeTailY[i+1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_bottom_left_radius=25)
+            else:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50))
+        elif 0 < i < (len(snakeTailX)-1):
+            if snakeTailX[i-1] > snakeTailX[i] and snakeTailY[i-1] == snakeTailY[i] and snakeTailY[i] < snakeTailY[i + 1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_top_left_radius=25)
+            elif snakeTailX[i-1] < snakeTailX[i] and snakeTailY[i-1] == snakeTailY[i] and snakeTailY[i] < snakeTailY[i + 1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_top_right_radius=25)
+            elif snakeTailX[i-1] == snakeTailX[i] and snakeTailY[i-1] > snakeTailY[i] and snakeTailX[i] > snakeTailX[i + 1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_top_right_radius=25)
+            elif snakeTailX[i-1] == snakeTailX[i] and snakeTailY[i-1] < snakeTailY[i] and snakeTailX[i] > snakeTailX[i + 1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_bottom_right_radius=25)
+            elif snakeTailX[i-1] == snakeTailX[i] and snakeTailY[i-1] > snakeTailY[i] and snakeTailX[i] < snakeTailX[i + 1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_top_left_radius=25)
+            elif snakeTailX[i-1] == snakeTailX[i] and snakeTailY[i-1] < snakeTailY[i] and snakeTailX[i] < snakeTailX[i + 1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_bottom_left_radius=25)
+            elif snakeTailX[i-1] < snakeTailX[i] and snakeTailY[i-1] == snakeTailY[i] and snakeTailY[i] > snakeTailY[i + 1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_bottom_right_radius=25)
+            elif snakeTailX[i-1] > snakeTailX[i] and snakeTailY[i-1] == snakeTailY[i] and snakeTailY[i] > snakeTailY[i + 1]:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
+                                 border_bottom_left_radius=25)
+            else:
+                pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50))
+        else:
+            pygame.draw.rect(surface, snake_tail_color, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50))
 
-    # "Eyes"
+    # Draws Head With Curves If Necessary
+    body_comes_from_bottom = True if snakeHeadX == snakeTailX[0] and snakeHeadY < snakeTailY[0] else False
+    body_comes_from_top = True if snakeHeadX == snakeTailX[0] and snakeHeadY > snakeTailY[0] else False
+    body_comes_from_left = True if snakeHeadX > snakeTailX[0] and snakeHeadY == snakeTailY[0] else False
+    body_comes_from_right = True if snakeHeadX < snakeTailX[0] and snakeHeadY == snakeTailY[0] else False
+
     if direction == "right":
-        pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50), border_top_right_radius=25, border_bottom_right_radius=25)
-    if direction == "left":
-        pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50), border_top_left_radius=25, border_bottom_left_radius=25)
-    if direction == "up":
-        pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50), border_top_right_radius=25, border_top_left_radius=25)
-    if direction == "down":
-        pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50), border_bottom_right_radius=25, border_bottom_left_radius=25)
+        if body_comes_from_bottom:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_top_right_radius=25, border_bottom_right_radius=25, border_top_left_radius=10)
+        elif body_comes_from_top:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_top_right_radius=25, border_bottom_right_radius=25, border_bottom_left_radius=10)
+        else:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_top_right_radius=25, border_bottom_right_radius=25)
 
-    #pygame.display.flip()
+        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 15), 8)
+        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 35), 8)
+
+        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 38, (snakeHeadY * 50 + 51) + 15), 3)
+        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 38, (snakeHeadY * 50 + 51) + 35), 3)
+
+    elif direction == "left":
+        if body_comes_from_bottom:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_top_left_radius=25, border_bottom_left_radius=25, border_top_right_radius=10)
+        elif body_comes_from_top:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_top_left_radius=25, border_bottom_left_radius=25, border_bottom_right_radius=10)
+        else:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_top_left_radius=25, border_bottom_left_radius=25)
+
+        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 15), 8)
+        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 35), 8)
+
+        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 12, (snakeHeadY * 50 + 51) + 15), 3)
+        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 12, (snakeHeadY * 50 + 51) + 35), 3)
+
+    elif direction == "up":
+        if body_comes_from_left:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_top_right_radius=25, border_top_left_radius=25, border_bottom_right_radius=10)
+        elif body_comes_from_right:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_top_right_radius=25, border_top_left_radius=25, border_bottom_left_radius=10)
+        else:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_top_right_radius=25, border_top_left_radius=25)
+
+        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 15), 8)
+        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 15), 8)
+
+        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 12), 3)
+        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 12), 3)
+
+    elif direction == "down":
+        if body_comes_from_left:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_bottom_right_radius=25, border_bottom_left_radius=25, border_top_right_radius=10)
+        elif body_comes_from_right:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_bottom_right_radius=25, border_bottom_left_radius=25, border_top_left_radius=10)
+        else:
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
+                             border_bottom_right_radius=25, border_bottom_left_radius=25)
+
+        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 35), 8)
+        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 35), 8)
+
+        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 38), 3)
+        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 38), 3)
 
 
 def drawApple():
-    colorApple = (255, 0, 0)
-    colorStem = (134, 89, 45)
-    colorLeaf = (92, 214, 92)
-    colorLeafMiddle = (32, 154, 32)
-    colorHighlightApple = (255, 255, 255)
-
     for i in range(numApplesWanted):
         if applesX[i] != "":
-            pygame.draw.rect(surface, colorStem, pygame.Rect((applesX[i]*50+25) - 1, (applesY[i]*50+75) - 18, 2, 10),border_radius=1)
-            pygame.draw.circle(surface, colorApple, ((applesX[i]*50+25), (applesY[i]*50+75) + 6), 16)
-            pygame.draw.ellipse(surface, colorLeaf, pygame.Rect((applesX[i]*50+25) + 3, (applesY[i]*50+75) - 20, 10, 6))
-            pygame.draw.rect(surface, colorLeafMiddle, pygame.Rect((applesX[i]*50+25) + 5, (applesY[i]*50+75) - 18, 6, 1))
-            pygame.draw.polygon(surface, colorHighlightApple, (((applesX[i]*50+25) - 7, (applesY[i]*50+75) - 6),
+            # Apple Design
+            pygame.draw.rect(surface, color_stem, pygame.Rect((applesX[i]*50+25) - 1, (applesY[i]*50+75) - 18, 2, 10),border_radius=1)
+            pygame.draw.circle(surface, color_apple, ((applesX[i]*50+25), (applesY[i]*50+75) + 6), 16)
+            pygame.draw.ellipse(surface, color_leaf, pygame.Rect((applesX[i]*50+25) + 3, (applesY[i]*50+75) - 20, 10, 6))
+            pygame.draw.rect(surface, color_leaf_middle, pygame.Rect((applesX[i]*50+25) + 5, (applesY[i]*50+75) - 18, 6, 1))
+            pygame.draw.polygon(surface, color_highlight_apple, (((applesX[i]*50+25) - 7, (applesY[i]*50+75) - 6),
                                                                ((applesX[i]*50+25) - 5, (applesY[i]*50+75) - 7),
                                                                ((applesX[i]*50+25) - 3, (applesY[i]*50+75) - 6),
                                                                ((applesX[i]*50+25) - 4, (applesY[i]*50+75) - 4),
@@ -262,11 +383,7 @@ def drawApple():
 
 
 def moveSnakeForward():
-    global snakeHeadX
-    global snakeHeadY
-    global snakeTailX
-    global snakeTailY
-    global run
+    global snakeHeadX, snakeHeadY, snakeTailX, snakeTailY, run
 
     # Move Body Forward
     for i in reversed(range(len(snakeTailX))):
@@ -310,6 +427,13 @@ while True:
 
     resetMainScreen()
 
+    # Snake
+    snakeTailX = [4, 3, 2, 1]
+    snakeTailY = [7, 7, 7, 7]
+    snakeHeadX = 5
+    snakeHeadY = 7
+
+    # Reset Variables
     run = True
     direction = "right"
     numApplesInGame = 0
@@ -317,18 +441,11 @@ while True:
     applesX = [""]*numApplesWanted
     applesY = [""]*numApplesWanted
     score = 0
-
-    # Snake
-    snakeTailX = [4, 3, 2, 1]
-    snakeTailY = [7, 7, 7, 7]
-    snakeHeadX = 5
-    snakeHeadY = 7
-
-    idk = False
+    timerIsDone = False
+    startTime = time.time()
 
     resetBackground()
 
-    startTime = time.time()
     while run:
 
         # Set Direction (https://www.pygame.org/docs/ref/event.html)
@@ -336,28 +453,27 @@ while True:
             if event.type == pygame.QUIT:
                 run = False
 
-            if idk:
+            if timerIsDone:
                 keys = pygame.key.get_pressed()
                 if keys[K_LEFT] or keys[K_a]:
                     if direction != "right":
                         direction = "left"
-                        idk = False
+                        timerIsDone = False
 
                 elif keys[K_RIGHT] or keys[K_d]:
                     if direction != "left":
                         direction = "right"
-                        idk = False
+                        timerIsDone = False
 
                 elif keys[K_UP] or keys[K_w]:
                     if direction != "down":
                         direction = "up"
-                        idk = False
+                        timerIsDone = False
 
                 elif keys[K_DOWN] or keys[K_s]:
                     if direction != "up":
                         direction = "down"
-                        idk = False
-
+                        timerIsDone = False
 
         # Apple Spawner
         if numApplesWanted > numApplesInGame:
@@ -399,10 +515,11 @@ while True:
         if not doCollisionCheck():
             drawApple()
             drawSnake()
+            pygame.display.flip()
             # Timer (https://www.programiz.com/python-programming/time)
             elapsedTime = time.time() - startTime
-            if elapsedTime > 0.5:
-                idk = True
+            if elapsedTime > 0.2:
+                timerIsDone = True
                 startTime = time.time()
 
                 # Remember Last Tail Position
@@ -414,6 +531,6 @@ while True:
         elif doCollisionCheck():
             run = False
 
-        pygame.display.flip()
+
 
     showScore()
