@@ -17,14 +17,18 @@ surface = pygame.display.set_mode((size_x, size_y))
 
 # Colors
 lineColor = (120, 150, 200)
+topMenuColor = (120, 150, 200)
 backgroundColor = (140, 177, 217)
 logoBackgroundColor = (175, 208, 214)
 darkerLogoBackgroundColor = (120, 163, 169)
 snakeColor = (230, 138, 0)
 darkerSnakeColor = (255, 163, 0)
 appleColor = (255, 0, 0)
+loadingBarColor = (230, 138, 0)
+
 white = (255, 255, 255)
 black = (0, 0, 0)
+red = (255, 0, 0)
 
 color_apple = (255, 0, 0)
 color_stem = (134, 89, 45)
@@ -37,30 +41,38 @@ fontSize = 80
 mainFont = pygame.font.Font(None, fontSize)
 snekFont = pygame.font.Font(None, 150)
 font2 = pygame.font.Font(None, 50)
+optionsFont = pygame.font.Font(None, 45)
 
 # Constant Variables
 username = ""
 input_box = pygame.Rect(185, 700, 400, 50)
-playBox = pygame.Rect(80, 700, 95, 50)
-menuBox = pygame.Rect(650, 700, 160, 50)
 color_inactive = (100, 100, 100)
 color = color_inactive
 color_active = (226, 127, 129)
 
+# Boxes / Buttons
+playBox = pygame.Rect(80, 700, 95, 50)
+optionsBox = pygame.Rect(650, 700, 160, 50)
+quitBox = pygame.Rect(750, 5, 95, 40)
+quitBoxShadow = pygame.Rect(753, 8, 95, 40)
+backBox = pygame.Rect(750, 5, 95, 40)
+backBoxShadow = pygame.Rect(753, 8, 95, 40)
+topMenuBox = pygame.Rect(0, 0, 851, 51)
+
 # Functions
 def resetMainScreen():
-    global username, color
+    global username, color, run
 
     active = False
     username_done = False
     highlight_play_button = False
-    highlight_menu_button = False
-    menu_button_clicked = False
+    highlight_options_button = False
+    options_button_clicked = False
 
     while True:
         # Main Logo
         surface.fill(backgroundColor)
-        pygame.draw.rect(surface, darkerLogoBackgroundColor, pygame.Rect(55, 155, 330, 135), border_radius=30)
+        pygame.draw.rect(surface, darkerLogoBackgroundColor, pygame.Rect(53, 153, 330, 135), border_radius=30)
         pygame.draw.rect(surface, logoBackgroundColor, pygame.Rect(60, 160, 325, 130), border_radius=30)
         surface.blit(mainFont.render("Welcome to:", True, (54, 57, 59)), (60, 80))
 
@@ -70,43 +82,6 @@ def resetMainScreen():
         surface.blit(snekFont.render("snek!", True, (255, 220, 255)), (80, 170))
 
         # Leaderboard
-
-        # Options Menu Button
-        if menu_button_clicked:
-            pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(646, 700, 160, 50), border_radius=10)
-            play_font = pygame.font.Font(None, 50)
-            surface.blit(play_font.render("Options", True, (255, 255, 255)), (660, 707))
-            pygame.display.flip()
-            time.sleep(0.3)
-
-            # Moves Button Up
-            pygame.draw.rect(surface, (50, 50, 50), pygame.Rect(650, 700, 160, 50), border_radius=10)
-            pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(646, 696, 160, 50), border_radius=10)
-            play_font = pygame.font.Font(None, 52)
-            surface.blit(play_font.render("Options", True, (255, 255, 255)), (659, 706))
-            pygame.display.flip()
-            time.sleep(0.1)
-
-            menu_button_clicked = False
-            resetOptionsScreen()
-
-        pygame.draw.rect(surface, (50, 50, 50), pygame.Rect(650, 700, 160, 50), border_radius=10)
-        pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(646, 696, 160, 50), border_radius=10)
-        menuButtonFont = pygame.font.Font(None, 52)
-
-        if highlight_menu_button:
-            surface.blit(menuButtonFont.render("Options", True, (255, 220, 255)), (659, 707))
-        else:
-            surface.blit(menuButtonFont.render("Options", True, (255, 255, 255)), (659, 707))
-
-        mouse = pygame.mouse.get_pos()
-        if menuBox.collidepoint(mouse):
-            highlight_menu_button = True
-            for eventOptionsButton in pygame.event.get():
-                if eventOptionsButton.type == pygame.MOUSEBUTTONDOWN:
-                    menu_button_clicked = True
-        else:
-            highlight_menu_button = False
 
 
         # Input Box
@@ -130,6 +105,12 @@ def resetMainScreen():
                 surface.blit(txt_surface, (input_box.x + 10, input_box.y + 10))
                 pygame.draw.rect(surface, color, input_box, 4, border_radius=10)
 
+            # Draws Options Button
+            pygame.draw.rect(surface, (50, 50, 50), pygame.Rect(650, 700, 160, 50), border_radius=10)
+            pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(646, 696, 160, 50), border_radius=10)
+            optionsButtonFont = pygame.font.Font(None, 52)
+            surface.blit(optionsButtonFont.render("Options", True, (255, 255, 255)), (659, 707))
+
             # Moves Button Down
             pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(80, 700, 95, 50), border_radius=10)
             play_font = pygame.font.Font(None, 50)
@@ -146,6 +127,7 @@ def resetMainScreen():
             time.sleep(0.1)
 
             if username != "":
+                run = True
                 return
             else:
                 username_done = False
@@ -161,9 +143,9 @@ def resetMainScreen():
         else:
             surface.blit(play_font.render("Play", True, (255, 255, 255)), (89, 707))
 
-        # Checks If Button Should Be Highlighted
+        # Checks If Buttons Should Be Highlighted / Were Pressed Pressed
         mouse = pygame.mouse.get_pos()
-        if playBox.collidepoint(mouse) and not username_done:
+        if playBox.collidepoint(mouse):
             highlight_play_button = True
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -171,6 +153,14 @@ def resetMainScreen():
         else:
             highlight_play_button = False
 
+        mouse = pygame.mouse.get_pos()
+        if optionsBox.collidepoint(mouse):
+            highlight_options_button = True
+            for eventOptionsButton in pygame.event.get():
+                if eventOptionsButton.type == pygame.MOUSEBUTTONDOWN:
+                    options_button_clicked = True
+        else:
+            highlight_options_button = False
 
         # Input Box -> https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame
         if input_box.collidepoint(mouse) and not active:
@@ -187,6 +177,8 @@ def resetMainScreen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     username_done = True
+                if event.key == pygame.K_o:
+                    options_button_clicked = True
                 if active:
                     if event.key == pygame.K_BACKSPACE:
                         username = username[:-1]
@@ -204,11 +196,41 @@ def resetMainScreen():
         surface.blit(txt_surface, (input_box.x+10, input_box.y+10))
         pygame.draw.rect(surface, color, input_box, 4, border_radius=10)
 
+        # Options Button
+        if options_button_clicked:
+            # Moves Button Down
+            pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(646, 700, 160, 50), border_radius=10)
+            play_font = pygame.font.Font(None, 50)
+            surface.blit(play_font.render("Options", True, (255, 255, 255)), (660, 707))
+            pygame.display.flip()
+            time.sleep(0.3)
+
+            # Moves Button Up
+            pygame.draw.rect(surface, (50, 50, 50), pygame.Rect(650, 700, 160, 50), border_radius=10)
+            pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(646, 696, 160, 50), border_radius=10)
+            play_font = pygame.font.Font(None, 52)
+            surface.blit(play_font.render("Options", True, (255, 255, 255)), (659, 706))
+            pygame.display.flip()
+            time.sleep(0.1)
+            options_button_clicked = False
+            resetOptionsScreen()
+
+        pygame.draw.rect(surface, (50, 50, 50), pygame.Rect(650, 700, 160, 50), border_radius=10)
+        pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(646, 696, 160, 50), border_radius=10)
+        optionsButtonFont = pygame.font.Font(None, 52)
+
+        # Highlights Button
+        if highlight_options_button:
+            surface.blit(optionsButtonFont.render("Options", True, (255, 220, 255)), (659, 707))
+        else:
+            surface.blit(optionsButtonFont.render("Options", True, (255, 255, 255)), (659, 707))
 
         pygame.display.flip()
 
 
 def resetBackground():
+    global highlight_quit_button, quit_button_clicked, run
+
     surface.fill(backgroundColor)
     for i in range(16):
         pygame.draw.line(surface, lineColor, (0, (i * 50) + 50), (850, (i * 50) + 50), width=1)
@@ -221,51 +243,128 @@ def resetBackground():
     # Username
     usernameSurface = font.render(username, True, (54, 57, 59))
     width = max(0, usernameSurface.get_width() + 10)
-    surface.blit(usernameSurface, (840-width, 10))
+    surface.blit(usernameSurface, (420-width/2, 10))
+
+    # Quit
+    if quit_button_clicked:
+        drawSnake()
+        drawApple()
+        pygame.draw.rect(surface, (100, 100, 100), quitBoxShadow, border_radius=10)
+        quit_font = pygame.font.Font(None, 40)
+        surface.blit(quit_font.render("Quit", True, (255, 255, 255)), (768, 15))
+        pygame.display.flip()
+        time.sleep(0.3)
+
+        # Moves Button Up
+        pygame.draw.rect(surface, (50, 50, 50), quitBoxShadow, border_radius=10)
+        pygame.draw.rect(surface, (100, 100, 100), quitBox, border_radius=10)
+        quit_font = pygame.font.Font(None, 42)
+        surface.blit(quit_font.render("Quit", True, (255, 255, 255)), (765, 12))
+        pygame.display.flip()
+        time.sleep(0.1)
+
+        quit_button_clicked = False
+        run = False
+
+    pygame.draw.rect(surface, (50, 50, 50), quitBoxShadow, border_radius=10)
+    pygame.draw.rect(surface, (100, 100, 100), quitBox, border_radius=10)
+    quit_font = pygame.font.Font(None, 42)
+
+    if highlight_quit_button:
+        surface.blit(quit_font.render("Quit", True, (255, 220, 255)), (765, 12))
+    else:
+        surface.blit(quit_font.render("Quit", True, (255, 255, 255)), (765, 12))
 
 
 def resetOptionsScreen():
-    surface.fill(backgroundColor)
-    pygame.display.flip()
-    time.sleep(1)
+    back_button_clicked = False
+    highlight_back_button = False
+    while True:
+        surface.fill(backgroundColor)
+
+        # Top Menu
+        pygame.draw.rect(surface, topMenuColor, topMenuBox)
+        pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(0, 0, 135, 50),
+                         border_bottom_right_radius=5, border_top_right_radius=5)
+        surface.blit(optionsFont.render("Options", True, (255, 255, 255)), (10, 10))
+
+        if back_button_clicked:
+            pygame.draw.rect(surface, (100, 100, 100), backBoxShadow, border_radius=10)
+            back_font = pygame.font.Font(None, 40)
+            surface.blit(back_font.render("Back", True, (255, 255, 255)), (768, 15))
+            pygame.display.flip()
+            time.sleep(0.3)
+
+            # Moves Button Up
+            pygame.draw.rect(surface, (50, 50, 50), backBoxShadow, border_radius=10)
+            pygame.draw.rect(surface, (100, 100, 100), backBox, border_radius=10)
+            back_font = pygame.font.Font(None, 42)
+            surface.blit(back_font.render("Back", True, (255, 255, 255)), (765, 12))
+            pygame.display.flip()
+            time.sleep(0.1)
+
+            back_button_clicked = False
+            return
+
+        pygame.draw.rect(surface, (50, 50, 50),backBoxShadow, border_radius=10)
+        pygame.draw.rect(surface, (100, 100, 100), backBox, border_radius=10)
+        back_font = pygame.font.Font(None, 42)
+
+        if highlight_back_button:
+            surface.blit(back_font.render("Back", True, (255, 220, 255)), (765, 12))
+        else:
+            surface.blit(back_font.render("Back", True, (255, 255, 255)), (765, 12))
+
+        mouse = pygame.mouse.get_pos()
+        if backBox.collidepoint(mouse):
+            highlight_back_button = True
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    back_button_clicked = True
+        else:
+            highlight_back_button = False
+
+        for event in pygame.event.get():
+            continue
+
+        pygame.display.flip()
 
 
 def showScore():
 
     for i in range(500):
         surface.fill(backgroundColor)
-        fontBigScore = pygame.font.SysFont("Uni Sans", int(50 + i/10))
-        surface.blit(fontBigScore.render("Score: " + str(score), True, (54, 57, 59)), (10+i*0.48, 10+i*0.38))
+        fontBigScore = pygame.font.SysFont("Uni Sans", int(50 + i/5))
+
+        surface.blit(fontBigScore.render("Score: " + str(score), True, (54, 57, 59)), (10+i*0.38, 10+i*0.38))
         pygame.display.flip()
 
+    startTime = time.time()
     while True:
         surface.fill(backgroundColor)
-        mouse = pygame.mouse.get_pos()
-        fontBigScore = pygame.font.SysFont("Uni Sans", 100)
-        surface.blit(fontBigScore.render("Score: " + str(score), True, (54, 57, 59)), (250, 200))
+        fontBigScore = pygame.font.SysFont("Uni Sans", int(50 + i / 5))
+        surface.blit(fontBigScore.render("Score: " + str(score), True, (54, 57, 59)), (200, 200))
 
-        if 400 < mouse[1] < 500 and 300 < mouse[0] < 500:
-            pygame.draw.rect(surface, (40, 40, 40), pygame.Rect(300, 400, 210, 110), border_radius=10)
-            pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(295, 395, 210, 110), border_radius=10)
-            font = pygame.font.SysFont("Uni Sans", 52)
-            surface.blit(font.render("Try again", True, (255, 255, 255)), (324, 429))
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONUP:
+        # Checks If Timer Is Done Or If Keys Are Pressed
+        elapsedTime = time.time() - startTime
+        if elapsedTime > 3:
+            return
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
                     return
 
-        else:
-            pygame.draw.rect(surface, (40, 40, 40), pygame.Rect(305, 405, 200, 100), border_radius=10)
-            pygame.draw.rect(surface, (100, 100, 100), pygame.Rect(300, 400, 200, 100), border_radius=10)
-            font = pygame.font.SysFont("Uni Sans", 50)
-            surface.blit(font.render("Try again", True, (255, 255, 255)), (325, 430))
+        # Loading Snake
+        pygame.draw.rect(surface, loadingBarColor, pygame.Rect(0, 751, (851/3)*elapsedTime, 50))
+        pygame.draw.rect(surface, snakeColor, pygame.Rect((851/3)*elapsedTime, 751, 50, 50),
+                         border_top_right_radius=25, border_bottom_right_radius=25)
+        pygame.draw.circle(surface, white, (((851/3)*elapsedTime) + 35, 751 + 15), 8)
+        pygame.draw.circle(surface, white, (((851/3)*elapsedTime) + 35, 751 + 35), 8)
 
+        pygame.draw.circle(surface, black, (((851/3)*elapsedTime) + 37, 751 + 15), 4)
+        pygame.draw.circle(surface, black, (((851/3)*elapsedTime) + 37, 751 + 35), 4)
 
         pygame.display.flip()
-
-        # Makes Sure Screen Continues Responding
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONUP:
-                continue
 
 
 def drawSnake():
@@ -482,8 +581,8 @@ def doCollisionCheck():
 
 
 # Main Loop
+run = True
 while True:
-
     resetMainScreen()
 
     # Snake
@@ -494,18 +593,30 @@ while True:
     freespaces = 17 * 15 - len(snakeTailX) - 1
 
     # Reset Variables
-    run = True
     direction = "right"
-    numApplesWanted = 40
+    numApplesWanted = 30
+    score = 0
     applesX = [""]*numApplesWanted
     applesY = [""]*numApplesWanted
-    score = 0
+    highlight_quit_button = False
+    quit_button_clicked = False
     timerIsDone = False
+    stopSnake = False
     startTime = time.time()
 
     resetBackground()
 
     while run:
+        # Highlight Quit Button
+        mouse = pygame.mouse.get_pos()
+        if quitBox.collidepoint(mouse):
+            highlight_quit_button = True
+            for eventOptionsButton in pygame.event.get():
+                if eventOptionsButton.type == pygame.MOUSEBUTTONDOWN:
+                    quit_button_clicked = True
+
+        else:
+            highlight_quit_button = False
 
         # Set Direction (https://www.pygame.org/docs/ref/event.html)
         for event in pygame.event.get():
@@ -543,7 +654,7 @@ while True:
             if applesX[i] == "":
                 tmpX = random.randint(0, 16)
                 tmpY = random.randint(0, 14)
-                if tmpX != snakeHeadX and tmpY != snakeHeadY:
+                if tmpX != snakeHeadX or tmpY != snakeHeadY:
                     applesX[i] = tmpX
                     applesY[i] = tmpY
 
@@ -566,13 +677,13 @@ while True:
                                 applesY[a] = ""
 
 
-        if not doCollisionCheck():
+        if not doCollisionCheck() and not stopSnake:
             drawApple()
             drawSnake()
             pygame.display.flip()
             # Timer (https://www.programiz.com/python-programming/time)
             elapsedTime = time.time() - startTime
-            if elapsedTime > 0.5:
+            if elapsedTime > 0.15:
                 timerIsDone = True
                 startTime = time.time()
 
@@ -582,7 +693,8 @@ while True:
 
                 resetBackground()
                 moveSnakeForward()
-        elif doCollisionCheck():
+        else:
+            time.sleep(0.5)
             run = False
 
 
