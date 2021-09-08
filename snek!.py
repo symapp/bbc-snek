@@ -19,8 +19,8 @@ surface = pygame.display.set_mode((size_x, size_y))
 darkerBackgroundColor = "#4CB4DC"
 topMenuColor = (120, 150, 200)
 backgroundColor = "#5BC3EB"
-logoBackgroundColor = (175, 208, 214)
-darkerLogoBackgroundColor = (120, 163, 169)
+logoBackgroundColor = "#6BD3FB"
+darkerLogoBackgroundColor = "#3BA3CB"
 snakeColor = "#FFA10A"
 appleColor = (255, 0, 0)
 loadingBarColor = (230, 138, 0)
@@ -62,6 +62,12 @@ backBox = pygame.Rect(750, 5, 95, 40)
 backBoxShadow = pygame.Rect(753, 8, 95, 40)
 topMenuBox = pygame.Rect(0, 0, 851, 51)
 
+optionsPos1 = pygame.Rect(40, 51 + 35, 400, 80)
+optionsPos2 = pygame.Rect(450, 56 + 35 * 5 + 80, 30, 30)
+optionsPos3 = pygame.Rect(450, 56 + 35 * 5 + 80 * 2, 30, 30)
+optionsPos4 = pygame.Rect(450, 56 + 35 * 7 + 80 * 3, 30, 30)
+optionsPos5 = pygame.Rect(450, 56 + 35 * 9 + 80 * 4, 30, 30)
+
 # Functions
 def resetMainScreen():
     global username, color, run
@@ -75,14 +81,17 @@ def resetMainScreen():
     while True:
         # Main Logo
         surface.fill(backgroundColor)
-        pygame.draw.rect(surface, darkerLogoBackgroundColor, pygame.Rect(53, 153, 330, 135), border_radius=30)
-        pygame.draw.rect(surface, logoBackgroundColor, pygame.Rect(60, 160, 325, 130), border_radius=30)
         surface.blit(mainFont.render("Welcome to:", True, raisinBlack), (60, 80))
+        #for i in range(1, 10):
+        #    pygame.draw.rect(surface, darkerLogoBackgroundColor, pygame.Rect(60+i, 160+i, 325, 130), border_radius=30)
+#
+        #pygame.draw.rect(surface, logoBackgroundColor, pygame.Rect(60, 160, 325, 130), border_radius=30)
 
-        for i in range(1, 6):
-            surface.blit(snekFont.render("snek!", True, (155, 120, 155)), (80+i, 170+i))
 
-        surface.blit(snekFont.render("snek!", True, (255, 220, 255)), (80, 170))
+        for i in range(1, 5):
+            surface.blit(snekFont.render("snek!", True, (155, 120, 155)), (85+i, 170+i))
+
+        surface.blit(snekFont.render("snek!", True, (255, 220, 255)), (85, 170))
 
         # Leaderboard
 
@@ -312,7 +321,6 @@ def resetOptionsScreen():
             pygame.display.flip()
             time.sleep(0.1)
 
-            back_button_clicked = False
             return
 
         pygame.draw.rect(surface, buttonShadow, backBoxShadow, border_radius=10)
@@ -332,6 +340,39 @@ def resetOptionsScreen():
                     back_button_clicked = True
         else:
             highlight_back_button = False
+
+        # SETTINGS
+        # Setting name
+        pygame.draw.rect(surface, white, pygame.Rect(40, 51 + 35, 400, 80), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(40, 51 + 35*3 + 80, 400, 80), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(40, 51 + 35*5 + 80*2, 400, 80), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(40, 51 + 35*7 + 80*3, 400, 80), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(40, 51 + 35*9 + 80*4, 400, 80), border_radius=15)
+
+        # More information
+        pygame.draw.rect(surface, white, pygame.Rect(450, 56 + 35, 30, 30), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(450, 56 + 35 * 3 + 80, 30, 30), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(450, 56 + 35 * 5 + 80 * 2, 30, 30), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(450, 56 + 35 * 7 + 80 * 3, 30, 30), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(450, 56 + 35 * 9 + 80 * 4, 30, 30), border_radius=15)
+
+        # Setting
+        pygame.draw.rect(surface, white, pygame.Rect(550, 51 + 35, 200, 80), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(550, 51 + 35 * 3 + 80, 200, 80), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(550, 51 + 35 * 5 + 80 * 2, 200, 80), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(550, 51 + 35 * 7 + 80 * 3, 200, 80), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(550, 51 + 35 * 9 + 80 * 4, 200, 80), border_radius=15)
+
+        # Custom
+        pygame.draw.rect(surface, white, pygame.Rect(760, 56 + 35, 50, 50), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(760, 56 + 35 * 3 + 80, 50, 50), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(760, 56 + 35 * 5 + 80 * 2, 50, 50), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(760, 56 + 35 * 7 + 80 * 3, 50, 50), border_radius=15)
+        pygame.draw.rect(surface, white, pygame.Rect(760, 56 + 35 * 9 + 80 * 4, 50, 50), border_radius=15)
+
+
+
+
 
         for event in pygame.event.get():
             continue
@@ -561,7 +602,7 @@ def drawApple():
 
 
 def moveSnakeForward():
-    global snakeHeadX, snakeHeadY, snakeTailX, snakeTailY, run
+    global snakeHeadX, snakeHeadY, snakeTailX, snakeTailY, run, elapsedTime
 
     # Move Body Forward
     for i in reversed(range(len(snakeTailX))):
@@ -614,7 +655,8 @@ while True:
 
     # Reset Variables
     direction = "right"
-    numApplesWanted = 3
+    speed = 0.2
+    numApplesWanted = 50
     score = 0
     applesX = [""]*numApplesWanted
     applesY = [""]*numApplesWanted
@@ -703,7 +745,7 @@ while True:
             pygame.display.flip()
             # Timer (https://www.programiz.com/python-programming/time)
             elapsedTime = time.time() - startTime
-            if elapsedTime > 0.2:
+            if elapsedTime > speed:
                 timerIsDone = True
                 startTime = time.time()
 
