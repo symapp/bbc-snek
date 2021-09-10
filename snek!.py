@@ -86,8 +86,8 @@ chosenNumberOfApples = 1
 speed = ["impossible", "hard", "harder", "default", "easier", "easy", "easy peasy"]
 speedNumbers = ["1", "0.05", "0.1", "0.2", "0.3", "0.5", "0.02"]
 chosenSpeed = 3
-playingFieldSize = ["8x10", "17x15", "24x21"]
-chosenPlayingFieldSize = 1
+playingFieldSize = ["10x8", "17x15", "24x21"]
+chosenPlayingFieldSize = 0
 chosenSelfCollisions = True
 chosenWallCollisions = True
 
@@ -266,15 +266,29 @@ def resetBackground():
     global highlight_quit_button, quit_button_clicked, run
 
     surface.fill(backgroundColor)
-    for i in range(1, 18):
-        for j in range(16):
-            if (i) % 2 == 0 or i == 0:
-                if (j) % 2 == 0 or j == 0:
-                    pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect((i * 50) - 50, (j * 50) + 50, 50, 50))
-            else:
-                if (j) % 2 == 1:
-                    pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect((i * 50) - 50, (j * 50) + 50, 50, 50))
-    pygame.draw.line(surface, darkerBackgroundColor, (0, 49), (851, 49), width=2)
+    if playingFieldSize[chosenPlayingFieldSize] == "17x15":
+        for i in range(1, 18):
+            for j in range(16):
+                if (i) % 2 == 0 or i == 0:
+                    if (j) % 2 == 0 or j == 0:
+                        pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect((i * 50) - 50, (j * 50) + 50, 50, 50))
+                else:
+                    if (j) % 2 == 1:
+                        pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect((i * 50) - 50, (j * 50) + 50, 50, 50))
+        pygame.draw.line(surface, darkerBackgroundColor, (0, 49), (851, 49), width=2)
+
+    elif playingFieldSize[chosenPlayingFieldSize] == "10x8":
+        for i in range(1, 11):
+            for j in range(9):
+                if (i) % 2 == 0 or i == 0:
+                    if (j) % 2 == 0 or j == 0:
+                        pygame.draw.rect(surface, darkerBackgroundColor,
+                                         pygame.Rect((i * 80) - 55, (j * 80) + 60, 80, 80))
+                else:
+                    if (j) % 2 == 1:
+                        pygame.draw.rect(surface, darkerBackgroundColor,
+                                         pygame.Rect((i * 80) - 55, (j * 80) + 60, 80, 80))
+        pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(24, 59, 800, 640), width=2)
 
     # Score
     surface.blit(font.render("Score: " + str(score), True, raisinBlack), (10, 10))
@@ -755,6 +769,7 @@ def moveSnakeForward():
             snakeHeadY = 0
         elif snakeHeadY < 0:
             snakeHeadY = 14
+
 
 def doCollisionCheck():
     global run
