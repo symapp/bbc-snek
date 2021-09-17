@@ -79,7 +79,7 @@ oBox3 = pygame.Rect(500, 65 + 35 * 5 + 80 * 2, 200, 50)
 oBox4 = pygame.Rect(500, 65 + 35 * 7 + 80 * 3, 200, 50)
 oBox5 = pygame.Rect(500, 65 + 35 * 9 + 80 * 4, 200, 50)
 
-# options list
+# default options list
 
 numberOfApples = ["0", "1", "5", "10", "30", "50"]
 chosenNumberOfApples = 1
@@ -88,8 +88,8 @@ speedNumbers = ["1", "0.05", "0.1", "0.2", "0.3", "0.5", "0.02"]
 chosenSpeed = 3
 playingFieldSize = ["10x8", "17x15", "24x21"]
 chosenPlayingFieldSize = 0
-chosenSelfCollisions = True
-chosenWallCollisions = True
+chosenSelfCollisions = False
+chosenWallCollisions = False
 
 
 # Functions
@@ -269,26 +269,40 @@ def resetBackground():
     if playingFieldSize[chosenPlayingFieldSize] == "17x15":
         for i in range(1, 18):
             for j in range(16):
-                if (i) % 2 == 0 or i == 0:
-                    if (j) % 2 == 0 or j == 0:
+                if i % 2 == 0 or i == 0:
+                    if j % 2 == 0 or j == 0:
                         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect((i * 50) - 50, (j * 50) + 50, 50, 50))
                 else:
-                    if (j) % 2 == 1:
+                    if j % 2 == 1:
                         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect((i * 50) - 50, (j * 50) + 50, 50, 50))
         pygame.draw.line(surface, darkerBackgroundColor, (0, 49), (851, 49), width=2)
 
     elif playingFieldSize[chosenPlayingFieldSize] == "10x8":
         for i in range(1, 11):
             for j in range(9):
-                if (i) % 2 == 0 or i == 0:
-                    if (j) % 2 == 0 or j == 0:
+                if i % 2 == 0 or i == 0:
+                    if j % 2 == 0 or j == 0:
                         pygame.draw.rect(surface, darkerBackgroundColor,
                                          pygame.Rect((i * 80) - 55, (j * 80) + 60, 80, 80))
                 else:
-                    if (j) % 2 == 1:
+                    if j % 2 == 1:
                         pygame.draw.rect(surface, darkerBackgroundColor,
                                          pygame.Rect((i * 80) - 55, (j * 80) + 60, 80, 80))
-        pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(24, 59, 800, 640), width=2)
+        pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(24, 59, 800, 720), width=2)
+
+    elif playingFieldSize[chosenPlayingFieldSize] == "24x21":
+        for i in range(1, 25):
+            for j in range(22):
+                if i % 2 == 0 or i == 0:
+                    if j % 2 == 0 or j == 0:
+                        pygame.draw.rect(surface, darkerBackgroundColor,
+                                         pygame.Rect((i * 33) - 4, (j * 33) + 54, 33, 33))
+                else:
+                    if j  % 2 == 1:
+                        pygame.draw.rect(surface, darkerBackgroundColor,
+                                         pygame.Rect((i * 33) - 4, (j * 33) + 54, 33, 33))
+        pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(28, 53, 792, 726), width=2)
+
 
     # Score
     surface.blit(font.render("Score: " + str(score), True, raisinBlack), (10, 10))
@@ -543,8 +557,8 @@ def showScore():
 
 
 def drawSnake():
-    colorState = 0
-    lastStateI = 0
+    global snakeGirth, correctionX, correctionY, snakeTailX, snakeTailY, snakeHeadX, snakeHeadY
+
     for i in reversed(range(len(snakeTailX))):
         temp_x = snakeTailX[i]
         temp_y = snakeTailY[i]
@@ -561,185 +575,214 @@ def drawSnake():
             snakeTailColor = (255, 0 + (i - 186) * 5, 255)
         else:
             snakeTailColor = (255, 255, 255)
+        snakeGirth / 6 * 4
+        snakeGirth - i
+        snakeGirth/3
+        snakeGirth/2/((borderX+1)*borderY)*i
+        snakeGirth * (snakeGirth / ((borderX + 1) * borderY) / (i + 1))
+        snakeCurveRadius = snakeGirth * (snakeGirth / ((borderX + 1) * borderY) / (i + 1))
+        print(snakeCurveRadius)
+        snakeThickness = 0
+        int(-snakeCurveRadius - snakeGirth)
+
+        for a in range(1, borderX+2):
+            for b in range(borderY+1):
+                if a % 2 == 0 or a == 0:
+                    if b % 2 == 0 or b == 0:
+                        if snakeTailX[i] == a and snakeTailY[i] == b:
+                            colorBackgroundSquare = backgroundColor
+
+                    else:
+                        colorBackgroundSquare = white
+                        #print("2")
+                else:
+                    if b % 2 == 1:
+                        continue
+                        colorBackgroundSquare = white
+                        #print("3")
+                    else:
+                        continue
+                        colorBackgroundSquare = white
+                        #print("4.")
+
 
         # Draws Body With Curves If Necessary
         if i == 0:
-            if snakeHeadX > snakeTailX[i] and snakeHeadY == snakeTailY[i] and snakeTailY[i] < snakeTailY[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_top_left_radius=25)
-            elif snakeHeadX < snakeTailX[i] and snakeHeadY == snakeTailY[i] and snakeTailY[i] < snakeTailY[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_top_right_radius=25)
-            elif snakeHeadX == snakeTailX[i] and snakeHeadY > snakeTailY[i] and snakeTailX[i] > snakeTailX[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_top_right_radius=25)
-            elif snakeHeadX == snakeTailX[i] and snakeHeadY < snakeTailY[i] and snakeTailX[i] > snakeTailX[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_bottom_right_radius=25)
-            elif snakeHeadX == snakeTailX[i] and snakeHeadY > snakeTailY[i] and snakeTailX[i] < snakeTailX[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_top_left_radius=25)
-            elif snakeHeadX == snakeTailX[i] and snakeHeadY < snakeTailY[i] and snakeTailX[i] < snakeTailX[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_bottom_left_radius=25)
-            elif snakeHeadX < snakeTailX[i] and snakeHeadY == snakeTailY[i] and snakeTailY[i] > snakeTailY[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_bottom_right_radius=25)
-            elif snakeHeadX > snakeTailX[i] and snakeHeadY == snakeTailY[i] and snakeTailY[i] > snakeTailY[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_bottom_left_radius=25)
+            if (snakeHeadX == snakeTailX[i]+1 or (snakeHeadX == 0 and snakeTailX[i] == borderX)) and snakeHeadY == snakeTailY[i] and (snakeTailY[i]+1 == snakeTailY[i + 1] or (snakeTailY[i] == borderY and snakeTailY[i + 1] == 0)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_top_left_radius=int(snakeGirth/2))
+            elif (snakeHeadX+1 == snakeTailX[i] or (snakeHeadX == borderX and snakeTailX[i] == 0)) and snakeHeadY == snakeTailY[i] and (snakeTailY[i]+1 == snakeTailY[i + 1] or (snakeTailY[i] == borderY and snakeTailY[i + 1] == 0)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_top_right_radius=int(snakeGirth/2))
+            elif snakeHeadX == snakeTailX[i] and (snakeHeadY == snakeTailY[i]+1 or (snakeHeadY == borderY and snakeTailY[i] == 0)) and (snakeTailX[i] == snakeTailX[i + 1]+1 or (snakeTailX[i] == 0 and snakeTailX[i + 1] == borderX)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_top_right_radius=int(snakeGirth/2))
+            elif snakeHeadX == snakeTailX[i] and (snakeHeadY+1 == snakeTailY[i] or (snakeHeadY == borderY and snakeTailY[i] == 0)) and (snakeTailX[i] == snakeTailX[i + 1]+1 or (snakeTailX[i] == 0 and snakeTailX[i + 1] == borderX)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_bottom_right_radius=int(snakeGirth/2))
+            elif snakeHeadX == snakeTailX[i] and (snakeHeadY == snakeTailY[i]+1 or (snakeHeadY == 0 and snakeTailY[i] == borderY)) and (snakeTailX[i]+1 == snakeTailX[i + 1] or (snakeTailX[i] == borderX and snakeTailX[i + 1] == 0)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_top_left_radius=int(snakeGirth/2))
+            elif snakeHeadX == snakeTailX[i] and (snakeHeadY+1 == snakeTailY[i] or (snakeHeadY == borderY and snakeTailY[i] == 0)) and (snakeTailX[i]+1 == snakeTailX[i + 1] or (snakeTailX[i] == borderX and snakeTailX[i + 1] == 0)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_bottom_left_radius=int(snakeGirth/2))
+            elif (snakeHeadX+1 == snakeTailX[i] or (snakeHeadX == borderX and snakeTailX[i] == 0)) and snakeHeadY == snakeTailY[i] and (snakeTailY[i] == snakeTailY[i + 1]+1 or (snakeTailY[i] == 0 and snakeTailY[i + 1] == borderY)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_bottom_right_radius=int(snakeGirth/2))
+            elif (snakeHeadX == snakeTailX[i]+1 or (snakeHeadX == 0 and snakeTailX[i] == borderX)) and snakeHeadY == snakeTailY[i] and (snakeTailY[i] == snakeTailY[i + 1]+1 or (snakeTailY[i] == 0 and snakeTailY[i + 1] == borderY)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_bottom_left_radius=int(snakeGirth/2))
             else:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50))
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth))
         elif 0 < i < (len(snakeTailX) - 1):
-            if snakeTailX[i - 1] > snakeTailX[i] and snakeTailY[i - 1] == snakeTailY[i] and snakeTailY[i] < snakeTailY[
-                i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_top_left_radius=25)
-            elif snakeTailX[i - 1] < snakeTailX[i] and snakeTailY[i - 1] == snakeTailY[i] and snakeTailY[i] < \
-                    snakeTailY[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_top_right_radius=25)
-            elif snakeTailX[i - 1] == snakeTailX[i] and snakeTailY[i - 1] > snakeTailY[i] and snakeTailX[i] > \
-                    snakeTailX[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_top_right_radius=25)
-            elif snakeTailX[i - 1] == snakeTailX[i] and snakeTailY[i - 1] < snakeTailY[i] and snakeTailX[i] > \
-                    snakeTailX[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_bottom_right_radius=25)
-            elif snakeTailX[i - 1] == snakeTailX[i] and snakeTailY[i - 1] > snakeTailY[i] and snakeTailX[i] < \
-                    snakeTailX[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_top_left_radius=25)
-            elif snakeTailX[i - 1] == snakeTailX[i] and snakeTailY[i - 1] < snakeTailY[i] and snakeTailX[i] < \
-                    snakeTailX[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_bottom_left_radius=25)
-            elif snakeTailX[i - 1] < snakeTailX[i] and snakeTailY[i - 1] == snakeTailY[i] and snakeTailY[i] > \
-                    snakeTailY[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_bottom_right_radius=25)
-            elif snakeTailX[i - 1] > snakeTailX[i] and snakeTailY[i - 1] == snakeTailY[i] and snakeTailY[i] > \
-                    snakeTailY[i + 1]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_bottom_left_radius=25)
+            if (snakeTailX[i - 1] == snakeTailX[i]+1 or (snakeTailX[i - 1] == 0 and snakeTailX[i] == borderX)) and snakeTailY[i - 1] == snakeTailY[i] and (snakeTailY[i]+1 == snakeTailY[i + 1] or (snakeTailY[i] == borderY and snakeTailY[i + 1] == 0)):
+                #pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX + removeSnakeWidth/2), (temp_y * snakeGirth + correctionY + removeSnakeWidth/2), snakeGirth-removeSnakeWidth, snakeGirth-removeSnakeWidth),
+                #                border_top_left_radius=int(snakeGirth/2))
+
+
+                pygame.draw.circle(surface, colorBackgroundSquare, ((temp_x * snakeGirth + correctionX + snakeGirth), (temp_y * snakeGirth + correctionY + snakeGirth-1)), snakeCurveRadius, snakeThickness, draw_top_left=True)
+
+
+
+            elif (snakeTailX[i - 1]+1 == snakeTailX[i] or (snakeTailX[i -1] == borderX and snakeTailX[i] == 0)) and snakeTailY[i - 1] == snakeTailY[i] and (snakeTailY[i]+1 == snakeTailY[i + 1] or (snakeTailY[i] == borderY and snakeTailY[i + 1] == 0)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_top_right_radius=int(snakeGirth/2))
+            elif snakeTailX[i - 1] == snakeTailX[i] and (snakeTailY[i - 1] == snakeTailY[i]+1 or (snakeTailY[i - 1] == 0 and snakeTailY[i] == borderY)) and (snakeTailX[i] == snakeTailX[i + 1]+1 or (snakeTailX[i] == 0 and snakeTailX[i + 1] == borderX)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_top_right_radius=int(snakeGirth/2))
+            elif snakeTailX[i - 1] == snakeTailX[i] and (snakeTailY[i - 1]+1 == snakeTailY[i] or (snakeTailY[i - 1] == borderY and snakeTailY[i] == 0)) and (snakeTailX[i] == snakeTailX[i + 1]+1 or (snakeTailX[i] == 0 and snakeTailX[i + 1] == borderX)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_bottom_right_radius=int(snakeGirth/2))
+            elif snakeTailX[i - 1] == snakeTailX[i] and (snakeTailY[i - 1] == snakeTailY[i]+1 or (snakeTailY[i - 1] == 0 and snakeTailY[i] == borderY)) and (snakeTailX[i]+1 == snakeTailX[i + 1] or (snakeTailX[i] == borderX and snakeTailX[i + 1] == 0)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_top_left_radius=int(snakeGirth/2))
+            elif snakeTailX[i - 1] == snakeTailX[i] and (snakeTailY[i - 1]+1 == snakeTailY[i] or (snakeTailY[i - 1] == borderY and snakeTailY[i] == 0)) and (snakeTailX[i]+1 == snakeTailX[i + 1] or (snakeTailX[i] == borderX and snakeTailX[i + 1] == 0)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_bottom_left_radius=int(snakeGirth/2))
+            elif (snakeTailX[i - 1]+1 == snakeTailX[i] or (snakeTailX[i - 1] == borderX and snakeTailX[i] == 0)) and snakeTailY[i - 1] == snakeTailY[i] and (snakeTailY[i] == snakeTailY[i + 1]+1 or (snakeTailY[i] == 0 and snakeTailY[i + 1] == borderY)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_bottom_right_radius=int(snakeGirth/2))
+            elif (snakeTailX[i - 1] == snakeTailX[i]+1 or (snakeTailX[i - 1] == 0 and snakeTailX[i] == borderX)) and snakeTailY[i - 1] == snakeTailY[i] and (snakeTailY[i] == snakeTailY[i + 1]+1 or (snakeTailY[i] == 0 and snakeTailY[i + 1] == borderY)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_bottom_left_radius=int(snakeGirth/2))
             else:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50))
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth))
         else:
-            if snakeTailX[i - 1] < snakeTailX[i] and snakeTailY[i - 1] == snakeTailY[i]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_top_right_radius=20, border_bottom_right_radius=20)
-            elif snakeTailX[i - 1] > snakeTailX[i] and snakeTailY[i - 1] == snakeTailY[i]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_top_left_radius=20, border_bottom_left_radius=20)
-            elif snakeTailX[i - 1] == snakeTailX[i] and snakeTailY[i - 1] < snakeTailY[i]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_bottom_left_radius=20, border_bottom_right_radius=20)
-            elif snakeTailX[i - 1] == snakeTailX[i] and snakeTailY[i - 1] > snakeTailY[i]:
-                pygame.draw.rect(surface, snakeTailColor, ((temp_x * 50 + 1), (temp_y * 50 + 51), 50, 50),
-                                 border_top_left_radius=20, border_top_right_radius=20)
+            if (snakeTailX[i - 1]+1 == snakeTailX[i] or (snakeTailX[i - 1] == borderX and snakeTailX[i] == 0)) and snakeTailY[i - 1] == snakeTailY[i]:
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_top_right_radius=int(snakeGirth/5*2), border_bottom_right_radius=int(snakeGirth/5*2))
+            elif (snakeTailX[i - 1] == snakeTailX[i]+1 or (snakeTailX[i - 1] == 0 and snakeTailX[i] == borderX)) and snakeTailY[i - 1] == snakeTailY[i]:
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_top_left_radius=int(snakeGirth/5*2), border_bottom_left_radius=int(snakeGirth/5*2))
+            elif snakeTailX[i - 1] == snakeTailX[i] and (snakeTailY[i - 1]+1 == snakeTailY[i] or (snakeTailY[i - 1] == borderY and snakeTailY[i] == 0)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_bottom_left_radius=int(snakeGirth/5*2), border_bottom_right_radius=int(snakeGirth/5*2))
+            elif snakeTailX[i - 1] == snakeTailX[i] and (snakeTailY[i - 1] == snakeTailY[i]+1 or (snakeTailY[i - 1] == 0 and snakeTailY[i] == borderY)):
+                pygame.draw.rect(surface, snakeTailColor, ((temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                                 border_top_left_radius=int(snakeGirth/5*2), border_top_right_radius=int(snakeGirth/5*2))
 
     # Draws Head With Curves If Necessary
-    body_comes_from_bottom = True if snakeHeadX == snakeTailX[0] and snakeHeadY < snakeTailY[0] else False
-    body_comes_from_top = True if snakeHeadX == snakeTailX[0] and snakeHeadY > snakeTailY[0] else False
-    body_comes_from_left = True if snakeHeadX > snakeTailX[0] and snakeHeadY == snakeTailY[0] else False
-    body_comes_from_right = True if snakeHeadX < snakeTailX[0] and snakeHeadY == snakeTailY[0] else False
+    body_comes_from_bottom = True if snakeHeadX == snakeTailX[0] and (snakeHeadY+1 == snakeTailY[0] or (snakeHeadY == borderY and snakeTailY[0] == 0)) else False
+    body_comes_from_top = True if snakeHeadX == snakeTailX[0] and (snakeHeadY == snakeTailY[0]+1 or (snakeHeadY == 0 and snakeTailY[0] == borderY)) else False
+    body_comes_from_left = True if (snakeHeadX == snakeTailX[0]+1 or (snakeHeadX == 0 and snakeTailX[0] == borderX)) and snakeHeadY == snakeTailY[0] else False
+    body_comes_from_right = True if (snakeHeadX+1 == snakeTailX[0] or (snakeHeadX == borderX and snakeTailX[0] == 0)) and snakeHeadY == snakeTailY[0] else False
 
     if direction == "right":
         if body_comes_from_bottom:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_top_right_radius=25, border_top_left_radius=10)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_top_right_radius=int(snakeGirth/2), border_top_left_radius=int(snakeGirth/5))
         elif body_comes_from_top:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_bottom_right_radius=25, border_bottom_left_radius=10)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_bottom_right_radius=int(snakeGirth/2), border_bottom_left_radius=int(snakeGirth/5))
         else:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_top_right_radius=25, border_bottom_right_radius=25)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_top_right_radius=int(snakeGirth/2), border_bottom_right_radius=int(snakeGirth/2))
 
-        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 15), 8)
-        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 35), 8)
+        pygame.draw.circle(surface, white, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*35), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*15)), int(snakeGirth/50*8))
+        pygame.draw.circle(surface, white, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*35), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*35)), int(snakeGirth/50*8))
 
-        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 38, (snakeHeadY * 50 + 51) + 15), 3)
-        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 38, (snakeHeadY * 50 + 51) + 35), 3)
+        pygame.draw.circle(surface, black, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*38), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*15)), int(snakeGirth/50*3))
+        pygame.draw.circle(surface, black, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*38), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*35)), int(snakeGirth/50*3))
 
     elif direction == "left":
         if body_comes_from_bottom:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_top_left_radius=25, border_top_right_radius=10)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_top_left_radius=int(snakeGirth/2), border_top_right_radius=int(snakeGirth/5))
         elif body_comes_from_top:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_bottom_left_radius=25, border_bottom_right_radius=10)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_bottom_left_radius=int(snakeGirth/2), border_bottom_right_radius=int(snakeGirth/5))
         else:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_top_left_radius=25, border_bottom_left_radius=25)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_top_left_radius=int(snakeGirth/2), border_bottom_left_radius=int(snakeGirth/2))
 
-        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 15), 8)
-        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 35), 8)
+        pygame.draw.circle(surface, white, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*15), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*15)), int(snakeGirth/50*8))
+        pygame.draw.circle(surface, white, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*15), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*35)), int(snakeGirth/50*8))
 
-        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 12, (snakeHeadY * 50 + 51) + 15), 3)
-        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 12, (snakeHeadY * 50 + 51) + 35), 3)
+        pygame.draw.circle(surface, black, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*12), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*15)), int(snakeGirth/50*3))
+        pygame.draw.circle(surface, black, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*12), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*35)), int(snakeGirth/50*3))
 
     elif direction == "up":
         if body_comes_from_left:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_top_right_radius=25, border_bottom_right_radius=10)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_top_right_radius=int(snakeGirth/2), border_bottom_right_radius=int(snakeGirth/5))
         elif body_comes_from_right:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_top_left_radius=25, border_bottom_left_radius=10)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_top_left_radius=int(snakeGirth/2), border_bottom_left_radius=int(snakeGirth/5))
         else:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_top_right_radius=25, border_top_left_radius=25)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_top_right_radius=int(snakeGirth/2), border_top_left_radius=int(snakeGirth/2))
 
-        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 15), 8)
-        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 15), 8)
+        pygame.draw.circle(surface, white, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*15), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*15)), int(snakeGirth/50*8))
+        pygame.draw.circle(surface, white, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*35), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*15)), int(snakeGirth/50*8))
 
-        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 12), 3)
-        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 12), 3)
+        pygame.draw.circle(surface, black, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*15), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*12)), int(snakeGirth/50*3))
+        pygame.draw.circle(surface, black, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*35), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*12)), int(snakeGirth/50*3))
 
     elif direction == "down":
         if body_comes_from_left:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_bottom_right_radius=25, border_top_right_radius=10)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_bottom_right_radius=int(snakeGirth/2), border_top_right_radius=int(snakeGirth/5))
         elif body_comes_from_right:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_bottom_left_radius=25, border_top_left_radius=10)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_bottom_left_radius=int(snakeGirth/2), border_top_left_radius=int(snakeGirth/5))
         else:
-            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * 50 + 1), (snakeHeadY * 50 + 51), 50, 50),
-                             border_bottom_right_radius=25, border_bottom_left_radius=25)
+            pygame.draw.rect(surface, snakeColor, pygame.Rect((snakeHeadX * snakeGirth + correctionX), (snakeHeadY * snakeGirth + correctionY), snakeGirth, snakeGirth),
+                             border_bottom_right_radius=int(snakeGirth/2), border_bottom_left_radius=int(snakeGirth/2))
 
-        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 35), 8)
-        pygame.draw.circle(surface, white, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 35), 8)
+        pygame.draw.circle(surface, white, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*15), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*35)), int(snakeGirth/50*8))
+        pygame.draw.circle(surface, white, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*35), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*35)), int(snakeGirth/50*8))
 
-        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 15, (snakeHeadY * 50 + 51) + 38), 3)
-        pygame.draw.circle(surface, black, ((snakeHeadX * 50 + 1) + 35, (snakeHeadY * 50 + 51) + 38), 3)
+        pygame.draw.circle(surface, black, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*15), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*38)), int(snakeGirth/50*3))
+        pygame.draw.circle(surface, black, ((snakeHeadX * snakeGirth + correctionX) + int(snakeGirth/50*35), (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth/50*38)), int(snakeGirth/50*3))
 
 
 def drawApple():
+    global snakeGirth, correctionX, correctionY
     for i in range(numApplesWanted):
         if applesX[i] != "":
             # Apple Design
             pygame.draw.rect(surface, color_stem,
-                             pygame.Rect((applesX[i] * 50 + 25) - 1, (applesY[i] * 50 + 75) - 18, 2, 10),
+                             pygame.Rect((applesX[i] * snakeGirth + snakeGirth/2+correctionX) - snakeGirth/50*1, (applesY[i] * snakeGirth + snakeGirth/2+correctionY) - snakeGirth/50*18, snakeGirth/50*2, snakeGirth/50*10),
                              border_radius=1)
-            pygame.draw.circle(surface, color_apple, ((applesX[i] * 50 + 25), (applesY[i] * 50 + 75) + 6), 16)
+            pygame.draw.circle(surface, color_apple, ((applesX[i] * snakeGirth + snakeGirth/2+correctionX), (applesY[i] * snakeGirth + snakeGirth/2) + snakeGirth/50*6+correctionY), snakeGirth/50*16)
             pygame.draw.ellipse(surface, color_leaf,
-                                pygame.Rect((applesX[i] * 50 + 25) + 3, (applesY[i] * 50 + 75) - 20, 10, 6))
+                                pygame.Rect((applesX[i] * snakeGirth + snakeGirth/2+correctionX) + snakeGirth/50*3, (applesY[i] * snakeGirth + snakeGirth/2+correctionY) - snakeGirth/50*20, snakeGirth/50*10, snakeGirth/50*6))
             pygame.draw.rect(surface, color_leaf_middle,
-                             pygame.Rect((applesX[i] * 50 + 25) + 5, (applesY[i] * 50 + 75) - 18, 6, 1))
+                             pygame.Rect((applesX[i] * snakeGirth + snakeGirth/2+correctionX) + snakeGirth/50*5, (applesY[i] * snakeGirth + snakeGirth/2+correctionY) - snakeGirth/50*18, snakeGirth/50*6, snakeGirth/50*1))
             pygame.draw.polygon(surface, color_highlight_apple,
-                                (((applesX[i] * 50 + 25) - 7, (applesY[i] * 50 + 75) - 6),
-                                 ((applesX[i] * 50 + 25) - 5, (applesY[i] * 50 + 75) - 7),
-                                 ((applesX[i] * 50 + 25) - 3, (applesY[i] * 50 + 75) - 6),
-                                 ((applesX[i] * 50 + 25) - 4, (applesY[i] * 50 + 75) - 4),
-                                 ((applesX[i] * 50 + 25) - 7, (applesY[i] * 50 + 75) - 1),
-                                 ((applesX[i] * 50 + 25) - 10, (applesY[i] * 50 + 75) - 2),
-                                 ((applesX[i] * 50 + 25) - 9, (applesY[i] * 50 + 75) - 1),
-                                 ((applesX[i] * 50 + 25) - 9, (applesY[i] * 50 + 75) - 4),
+                                (((applesX[i] * snakeGirth + snakeGirth/2+correctionX) - snakeGirth/50*7, (applesY[i] * snakeGirth + snakeGirth/2+correctionY) - snakeGirth/50*6),
+                                 ((applesX[i] * snakeGirth + snakeGirth/2+correctionX) - snakeGirth/50*5, (applesY[i] * snakeGirth + snakeGirth/2+correctionY) - snakeGirth/50*7),
+                                 ((applesX[i] * snakeGirth + snakeGirth/2+correctionX) - snakeGirth/50*3, (applesY[i] * snakeGirth + snakeGirth/2+correctionY) - snakeGirth/50*6),
+                                 ((applesX[i] * snakeGirth + snakeGirth/2+correctionX) - snakeGirth/50*4, (applesY[i] * snakeGirth + snakeGirth/2+correctionY) - snakeGirth/50*4),
+                                 ((applesX[i] * snakeGirth + snakeGirth/2+correctionX) - snakeGirth/50*7, (applesY[i] * snakeGirth + snakeGirth/2+correctionY) - snakeGirth/50*1),
+                                 ((applesX[i] * snakeGirth + snakeGirth/2+correctionX) - snakeGirth/50*10, (applesY[i] * snakeGirth + snakeGirth/2+correctionY) - snakeGirth/50*2),
+                                 ((applesX[i] * snakeGirth + snakeGirth/2+correctionX) - snakeGirth/50*9, (applesY[i] * snakeGirth + snakeGirth/2+correctionY) - snakeGirth/50*1),
+                                 ((applesX[i] * snakeGirth + snakeGirth/2+correctionX) - snakeGirth/50*9, (applesY[i] * snakeGirth + snakeGirth/2+correctionY) - snakeGirth/50*4),
                                  ))
 
 
 def moveSnakeForward():
-    global snakeHeadX, snakeHeadY, snakeTailX, snakeTailY, run, elapsedTime
+    global snakeHeadX, snakeHeadY, snakeTailX, snakeTailY, run, elapsedTime, borderX, borderY
 
     # Move Body Forward
     for i in reversed(range(len(snakeTailX))):
@@ -761,25 +804,25 @@ def moveSnakeForward():
         snakeHeadY += 1
 
     if not chosenWallCollisions:
-        if snakeHeadX > 16:
+        if snakeHeadX > borderX:
             snakeHeadX = 0
         elif snakeHeadX < 0:
-            snakeHeadX = 16
-        elif snakeHeadY > 14:
+            snakeHeadX = borderX
+        elif snakeHeadY > borderY:
             snakeHeadY = 0
         elif snakeHeadY < 0:
-            snakeHeadY = 14
+            snakeHeadY = borderY
 
 
 def doCollisionCheck():
-    global run
+    global run, borderX, borderY
 
     if chosenWallCollisions:
-        if snakeHeadX > 16:
+        if snakeHeadX > borderX:
             return True
         elif snakeHeadX < 0:
             return True
-        elif snakeHeadY > 14:
+        elif snakeHeadY > borderY:
             return True
         elif snakeHeadY < 0:
             return True
@@ -815,6 +858,26 @@ while True:
     timerIsDone = False
     stopSnake = False
     startTime = time.time()
+
+    #set variables based on playing field size
+    if playingFieldSize[chosenPlayingFieldSize] == "10x8":
+        borderX = 9
+        borderY = 8
+        snakeGirth = 80
+        correctionX = 25
+        correctionY = 60
+    elif playingFieldSize[chosenPlayingFieldSize] == "24x21":
+        borderX = 23
+        borderY = 21
+        snakeGirth = 33
+        correctionX = 29
+        correctionY = 54
+    else:
+        borderX = 16
+        borderY = 15
+        snakeGirth = 50
+        correctionX = 1
+        correctionY = 51
 
     resetBackground()
 
@@ -864,8 +927,8 @@ while True:
 
         for i in range(len(applesX)):
             if applesX[i] == "":
-                tmpX = random.randint(0, 16)
-                tmpY = random.randint(0, 14)
+                tmpX = random.randint(0, borderX)
+                tmpY = random.randint(0, borderY)
                 if tmpX != snakeHeadX or tmpY != snakeHeadY:
                     applesX[i] = tmpX
                     applesY[i] = tmpY
