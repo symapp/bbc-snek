@@ -1,3 +1,4 @@
+#username;chosenNumberOfApples;chosenSpeed;chosenPlayingFieldSize;chosenSelfCollisions;chosenWallCollisions;score
 asdf;123
 asddf;1234678
 d;1
