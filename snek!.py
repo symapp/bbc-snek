@@ -417,13 +417,6 @@ def resetOptionsScreen():
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(oBox4), border_radius=15)
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(oBox5), border_radius=15)
 
-        # Custom
-        # pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(760, 56 + 35, 50, 50), border_radius=15)
-        # pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(760, 56 + 35 * 3 + 80, 50, 50), border_radius=15)
-        # pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(760, 56 + 35 * 5 + 80 * 2, 50, 50), border_radius=15)
-        # pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(760, 56 + 35 * 7 + 80 * 3, 50, 50), border_radius=15)
-        # pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(760, 56 + 35 * 9 + 80 * 4, 50, 50), border_radius=15)
-
         # number of apples
         surface.blit(optionsTitleFont.render("Number of apples", True, raisinBlack), (60, 108))
         if oBox1.collidepoint(mouse):
@@ -617,9 +610,9 @@ def drawSnake():
                     (temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY + snakeGirth)),
                                    snakeCurveRadius, snakeThickness, draw_top_right=True)
             elif snakeHeadX == snakeTailX[i] and (
-                    snakeHeadY == snakeTailY[i] + 1 or (snakeHeadY == borderY and snakeTailY[i] == 0)) and (
+                    snakeHeadY == snakeTailY[i] + 1 or (snakeHeadY == 0 and snakeTailY[i] == borderY)) and (
                     snakeTailX[i] == snakeTailX[i + 1] + 1 or (snakeTailX[i] == 0 and snakeTailX[i + 1] == borderX)):
-                pygame.draw.circle(surface, snakeTailColor, (
+                pygame.draw.circle(surface, white, (
                     (temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY + snakeGirth)),
                                    snakeCurveRadius, snakeThickness, draw_top_right=True)
             elif snakeHeadX == snakeTailX[i] and (
@@ -1079,7 +1072,6 @@ while True:
                         timerIsDone = False
 
         # Apple Spawner V2
-
         if freespaces < numApplesWanted:
             numApplesWanted -= 1
 
