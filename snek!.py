@@ -87,9 +87,9 @@ speed = ["impossible", "hard", "harder", "default", "easier", "easy", "easy peas
 speedNumbers = ["1", "0.05", "0.1", "0.2", "0.3", "0.5", "0.02"]
 chosenSpeed = 3
 playingFieldSize = ["10x8", "17x15", "24x21"]
-chosenPlayingFieldSize = 0
-chosenSelfCollisions = False
-chosenWallCollisions = False
+chosenPlayingFieldSize = 2
+chosenSelfCollisions = True
+chosenWallCollisions = True
 
 
 # Functions
@@ -612,7 +612,7 @@ def drawSnake():
             elif snakeHeadX == snakeTailX[i] and (
                     snakeHeadY == snakeTailY[i] + 1 or (snakeHeadY == 0 and snakeTailY[i] == borderY)) and (
                     snakeTailX[i] == snakeTailX[i + 1] + 1 or (snakeTailX[i] == 0 and snakeTailX[i + 1] == borderX)):
-                pygame.draw.circle(surface, white, (
+                pygame.draw.circle(surface, snakeTailColor, (
                     (temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY + snakeGirth)),
                                    snakeCurveRadius, snakeThickness, draw_top_right=True)
             elif snakeHeadX == snakeTailX[i] and (
@@ -648,6 +648,7 @@ def drawSnake():
             else:
                 pygame.draw.rect(surface, snakeTailColor, (
                     (temp_x * snakeGirth + correctionX), (temp_y * snakeGirth + correctionY), snakeGirth, snakeGirth))
+
         elif 0 < i < (len(snakeTailX) - 1):
             if (snakeTailX[i - 1] == snakeTailX[i] + 1 or (snakeTailX[i - 1] == 0 and snakeTailX[i] == borderX)) and \
                     snakeTailY[i - 1] == snakeTailY[i] and (
