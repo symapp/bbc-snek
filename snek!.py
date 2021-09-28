@@ -6,16 +6,16 @@ from random import *
 random = Random()
 pygame.init()
 
-# Font
+# font
 pygame.font.init()
 font = pygame.font.SysFont("Uni Sans", 50)
 
-# Display
-size_x = 851  # 17 felder
-size_y = 801  # 15 felder
+# display
+size_x = 851
+size_y = 801
 surface = pygame.display.set_mode((size_x, size_y))
 
-# Colors
+# colors
 darkerBackgroundColor = "#4CB4DC"
 topMenuColor = (120, 150, 200)
 backgroundColor = "#5BC3EB"
@@ -30,6 +30,7 @@ buttonColor = "#59656F"
 white = (255, 255, 255)
 highlight = (255, 220, 255)
 black = (0, 0, 0)
+lightGray = (200, 200, 200)
 red = (255, 0, 0)
 raisinBlack = "#1D1E2C"
 puce = "#CD8E9B"
@@ -41,7 +42,7 @@ color_leaf = (92, 214, 92)
 color_leaf_middle = (32, 154, 32)
 color_highlight_apple = (255, 255, 255)
 
-# Fonts
+# fonts
 mainFont = pygame.font.Font(None, 80)
 snekFont = pygame.font.Font(None, 150)
 font2 = pygame.font.Font(None, 50)
@@ -49,15 +50,17 @@ optionsFont = pygame.font.Font(None, 45)
 optionsTitleFont = pygame.font.Font(None, 50)
 questionMark = pygame.font.Font(None, 30)
 optionsFont = pygame.font.Font(None, 40)
+leaderboardFont = pygame.font.Font(None, 40)
+leaderboardFont2 = pygame.font.Font(None, 40)
 
-# Constant Variables
+# constant variables
 username = ""
 input_box = pygame.Rect(185, 700, 400, 50)
 color_inactive = (100, 100, 100)
 color = color_inactive
 color_active = (226, 127, 129)
 
-# Boxes / Buttons
+# boxes / buttons
 playBox = pygame.Rect(80, 700, 95, 50)
 optionsBox = pygame.Rect(650, 700, 160, 50)
 quitBox = pygame.Rect(750, 3, 95, 40)
@@ -87,12 +90,12 @@ speed = ["impossible", "hard", "harder", "default", "easier", "easy", "easy peas
 speedNumbers = ["1", "0.05", "0.1", "0.2", "0.3", "0.5", "0.02"]
 chosenSpeed = 3
 playingFieldSize = ["10x8", "17x15", "24x21"]
-chosenPlayingFieldSize = 2
+chosenPlayingFieldSize = 1
 chosenSelfCollisions = True
 chosenWallCollisions = True
 
 
-# Functions
+# functions
 def resetMainScreen():
     global username, color, run
 
@@ -103,29 +106,25 @@ def resetMainScreen():
     options_button_clicked = False
 
     while True:
-        # Main Logo
+        # main logo
         surface.fill(backgroundColor)
         surface.blit(mainFont.render("Welcome to:", True, raisinBlack), (60, 80))
-        # for i in range(1, 10):
-        #    pygame.draw.rect(surface, darkerLogoBackgroundColor, pygame.Rect(60+i, 160+i, 325, 130), border_radius=30)
-        #
-        # pygame.draw.rect(surface, logoBackgroundColor, pygame.Rect(60, 160, 325, 130), border_radius=30)
 
         for i in range(1, 5):
             surface.blit(snekFont.render("snek!", True, (155, 120, 155)), (70 + i, 170 + i))
 
         surface.blit(snekFont.render("snek!", True, (255, 220, 255)), (70, 170))
 
-        # Leaderboard
+        # leaderboard
         drawLeaderboard()
 
-        # Input Box
+        # input box
         pygame.draw.rect(surface, buttonColor, pygame.Rect(185, 700, 400, 50), border_radius=10)
         pygame.draw.rect(surface, white, pygame.Rect(188, 703, 394, 44), border_radius=10)
 
-        # Play Button Clicked
+        # play button clicked
         if username_done:
-            # Checks If Username Is Valid + Keeps Username / Writes Message In Input Box
+            # checks if username is valid + saves username / displays message in input box
             if username == "":
                 username_input_color = (200, 200, 200)
                 txt_surface = font2.render("Pls Username uwu", True, username_input_color)
@@ -140,20 +139,20 @@ def resetMainScreen():
                 surface.blit(txt_surface, (input_box.x + 10, input_box.y + 10))
                 pygame.draw.rect(surface, color, input_box, 4, border_radius=10)
 
-            # Draws Options Button
+            # draws options button
             pygame.draw.rect(surface, buttonShadow, pygame.Rect(650, 700, 160, 50), border_radius=10)
             pygame.draw.rect(surface, buttonColor, pygame.Rect(646, 696, 160, 50), border_radius=10)
             optionsButtonFont = pygame.font.Font(None, 52)
             surface.blit(optionsButtonFont.render("Options", True, white), (659, 707))
 
-            # Moves Button Down
+            # moves button down
             pygame.draw.rect(surface, buttonColor, pygame.Rect(80, 700, 95, 50), border_radius=10)
             play_font = pygame.font.Font(None, 50)
             surface.blit(play_font.render("Play", True, white), (90, 708))
             pygame.display.flip()
             time.sleep(0.3)
 
-            # Moves Button Up
+            # moves button up
             pygame.draw.rect(surface, buttonShadow, pygame.Rect(80, 700, 95, 50), border_radius=10)
             pygame.draw.rect(surface, buttonColor, pygame.Rect(76, 696, 95, 50), border_radius=10)
             play_font = pygame.font.Font(None, 52)
@@ -167,18 +166,18 @@ def resetMainScreen():
             else:
                 username_done = False
 
-        # Draws Button
+        # draws button
         pygame.draw.rect(surface, buttonShadow, pygame.Rect(80, 700, 95, 50), border_radius=10)
         pygame.draw.rect(surface, buttonColor, pygame.Rect(76, 696, 95, 50), border_radius=10)
         play_font = pygame.font.Font(None, 52)
 
-        # Highlights Button
+        # highlights button
         if highlight_play_button:
             surface.blit(play_font.render("Play", True, highlight), (89, 707))
         else:
             surface.blit(play_font.render("Play", True, white), (89, 707))
 
-        # Checks If Buttons Should Be Highlighted / Were Pressed Pressed
+        # checks if buttons should be highlighted / were pressed pressed
         mouse = pygame.mouse.get_pos()
         if playBox.collidepoint(mouse):
             highlight_play_button = True
@@ -197,7 +196,7 @@ def resetMainScreen():
         else:
             highlight_options_button = False
 
-        # Input Box -> https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame
+        # input box -> https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame
         if input_box.collidepoint(mouse) and not active:
             color = highlight
         else:
@@ -231,16 +230,16 @@ def resetMainScreen():
         surface.blit(txt_surface, (input_box.x + 10, input_box.y + 10))
         pygame.draw.rect(surface, color, input_box, 4, border_radius=10)
 
-        # Options Button
+        # options button
         if options_button_clicked:
-            # Moves Button Down
+            # moves button down
             pygame.draw.rect(surface, buttonColor, pygame.Rect(650, 700, 160, 50), border_radius=10)
             play_font = pygame.font.Font(None, 50)
             surface.blit(play_font.render("Options", True, white), (660, 707))
             pygame.display.flip()
             time.sleep(0.3)
 
-            # Moves Button Up
+            # moves button up
             pygame.draw.rect(surface, buttonShadow, pygame.Rect(650, 700, 160, 50), border_radius=10)
             pygame.draw.rect(surface, buttonColor, pygame.Rect(646, 696, 160, 50), border_radius=10)
             play_font = pygame.font.Font(None, 52)
@@ -254,7 +253,7 @@ def resetMainScreen():
         pygame.draw.rect(surface, buttonColor, pygame.Rect(646, 696, 160, 50), border_radius=10)
         optionsButtonFont = pygame.font.Font(None, 52)
 
-        # Highlights Button
+        # highlights button
         if highlight_options_button:
             surface.blit(optionsButtonFont.render("Options", True, white), (659, 707))
         else:
@@ -266,6 +265,7 @@ def resetMainScreen():
 def resetBackground():
     global highlight_quit_button, quit_button_clicked, run
 
+    # grid
     surface.fill(backgroundColor)
     if playingFieldSize[chosenPlayingFieldSize] == "17x15":
         for i in range(1, 18):
@@ -306,15 +306,15 @@ def resetBackground():
                                          pygame.Rect((i * 33) - 4, (j * 33) + 54, 33, 33))
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(28, 53, 792, 726), width=2)
 
-    # Score
+    # score
     surface.blit(font.render("Score: " + str(score), True, raisinBlack), (10, 10))
 
-    # Username
+    # username
     usernameSurface = font.render(username, True, raisinBlack)
     width = max(0, usernameSurface.get_width() + 10)
     surface.blit(usernameSurface, (420 - width / 2, 10))
 
-    # Quit
+    # quit button
     if quit_button_clicked:
         drawSnake()
         drawApple()
@@ -324,7 +324,7 @@ def resetBackground():
         pygame.display.flip()
         time.sleep(0.3)
 
-        # Moves Button Up
+        # moves button up
         pygame.draw.rect(surface, buttonShadow, quitBoxShadow, border_radius=10)
         pygame.draw.rect(surface, buttonColor, quitBox, border_radius=10)
         quit_font = pygame.font.Font(None, 42)
@@ -334,6 +334,7 @@ def resetBackground():
 
         quit_button_clicked = False
         run = False
+        doHannahBaker()
 
     pygame.draw.rect(surface, buttonShadow, quitBoxShadow, border_radius=10)
     pygame.draw.rect(surface, buttonColor, quitBox, border_radius=10)
@@ -352,7 +353,7 @@ def resetOptionsScreen():
     while True:
         surface.fill(backgroundColor)
 
-        # Top Menu
+        # top menu
         pygame.draw.rect(surface, buttonShadow, pygame.Rect(0, 5, 140, 50),
                          border_bottom_right_radius=5, border_top_right_radius=5)
         pygame.draw.rect(surface, buttonColor, pygame.Rect(0, 1, 135, 50),
@@ -366,7 +367,7 @@ def resetOptionsScreen():
             pygame.display.flip()
             time.sleep(0.3)
 
-            # Moves Button Up
+            # moves button up
             pygame.draw.rect(surface, buttonShadow, backBoxShadow, border_radius=10)
             pygame.draw.rect(surface, buttonColor, backBox, border_radius=10)
             back_font = pygame.font.Font(None, 42)
@@ -395,7 +396,7 @@ def resetOptionsScreen():
             highlight_back_button = False
 
         # SETTINGS
-        # Info
+        # info
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(25, 72 + 35, 30, 30), border_radius=14)
         surface.blit(questionMark.render("?", True, blackCoral), (34, 113))
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(25, 72 + 35 * 3 + 80, 30, 30), border_radius=14)
@@ -410,7 +411,7 @@ def resetOptionsScreen():
                          border_radius=14)
         surface.blit(questionMark.render("?", True, blackCoral), (34, 713))
 
-        # Setting
+        # settings
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(oBox1), border_radius=15)
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(oBox2), border_radius=15)
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(oBox3), border_radius=15)
@@ -532,6 +533,7 @@ def resetOptionsScreen():
 
 
 def showScore():
+    # moves score
     for i in range(500):
         surface.fill(backgroundColor)
         fontBigScore = pygame.font.SysFont("Uni Sans", int(50 + i / 5))
@@ -545,7 +547,7 @@ def showScore():
         fontBigScore = pygame.font.SysFont("Uni Sans", int(50 + i / 5))
         surface.blit(fontBigScore.render("Score: " + str(score), True, raisinBlack), (200, 200))
 
-        # Checks If Timer Is Done Or If Keys Are Pressed
+        # checks if timer is done or if keys are pressed
         elapsedTime = time.time() - startTime
         if elapsedTime > 3:
             return
@@ -554,7 +556,7 @@ def showScore():
                 if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
                     return
 
-        # Loading Snake
+        # loading snake
         pygame.draw.rect(surface, snakeColor, pygame.Rect(0, 751, (851 / 3) * elapsedTime, 50))
         pygame.draw.rect(surface, snakeColor, pygame.Rect((851 / 3) * elapsedTime, 751, 50, 50),
                          border_top_right_radius=25, border_bottom_right_radius=25)
@@ -574,6 +576,7 @@ def drawSnake():
         temp_x = snakeTailX[i]
         temp_y = snakeTailY[i]
 
+        # color
         if i < 50:
             snakeTailColor = (255, 161, 10 + i * 5)
         elif 50 <= i < 102:
@@ -589,13 +592,14 @@ def drawSnake():
         else:
             snakeTailColor = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
+        # thickness
         snakeCurveRadius = snakeGirth - ((snakeGirth / 3 * 2) / ((borderX + 1) * borderY) * i)
         snakeThickness = int(snakeGirth - 2 * ((snakeGirth / 3 * 2) / ((borderX + 1) * borderY) * i))
         if snakeThickness < snakeGirth / 3:
             snakeCurveRadius = snakeGirth / 3 * 2
             snakeThickness = int(snakeGirth / 3)
 
-        # Draws Body With Curves If Necessary
+        # draws body with curves if necessary
         if i == 0:
             if (snakeHeadX == snakeTailX[i] + 1 or (snakeHeadX == 0 and snakeTailX[i] == borderX)) and snakeHeadY == \
                     snakeTailY[i] and (
@@ -744,7 +748,7 @@ def drawSnake():
                                  border_top_left_radius=int(snakeGirth / 5 * 2),
                                  border_top_right_radius=int(snakeGirth / 5 * 2))
 
-    # Draws Head With Curves If Necessary
+    # draws head with curves if necessary
     body_comes_from_bottom = True if snakeHeadX == snakeTailX[0] and (
             snakeHeadY + 1 == snakeTailY[0] or (snakeHeadY == borderY and snakeTailY[0] == 0)) else False
     body_comes_from_top = True if snakeHeadX == snakeTailX[0] and (
@@ -889,7 +893,7 @@ def drawApple():
     global snakeGirth, correctionX, correctionY
     for i in range(numApplesWanted):
         if applesX[i] != "":
-            # Apple Design
+            # apple design
             pygame.draw.rect(surface, color_stem,
                              pygame.Rect((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 1,
                                          (applesY[
@@ -932,7 +936,7 @@ def drawApple():
 def moveSnakeForward():
     global snakeHeadX, snakeHeadY, snakeTailX, snakeTailY, run, elapsedTime, borderX, borderY
 
-    # Move Body Forward
+    # move body forward
     for i in reversed(range(len(snakeTailX))):
         if i != 0:
             snakeTailX[i] = snakeTailX[i - 1]
@@ -941,7 +945,7 @@ def moveSnakeForward():
             snakeTailX[i] = snakeHeadX
             snakeTailY[i] = snakeHeadY
 
-    # Move Head Forward
+    # move head forward
     if direction == "right":
         snakeHeadX += 1
     if direction == "left":
@@ -982,26 +986,247 @@ def doCollisionCheck():
 
 
 def drawLeaderboard():
+    # fetching usernames and scores by gamemode
+    scoresInGamemode = []
+    usernamesInGamemode = []
+    scoreFile = open("scores.txt", "r")
+    scoreFileLines = scoreFile.readlines()
+    for lineNum in range(len(scoreFileLines)):
+        isUsername = True
+        fileUsername = ""
+        isChosenNumberOfApples = False
+        fileChosenNumberOfApples = ""
+        isChosenSpeed = False
+        fileChosenSpeed = ""
+        isChosenPlayingFieldSize = False
+        fileChosenPlayingFieldSize = ""
+        isChosenSelfCollisions = False
+        fileChosenSelfCollisions = ""
+        isChosenWallCollisions = False
+        fileChosenWallCollisions = ""
+        isScore = False
+        fileScore = ""
+        if scoreFileLines[lineNum][0] != "#":
+            for char in scoreFileLines[lineNum]:
+                if isUsername:
+                    if char != ";":
+                        fileUsername += char
+                    else:
+                        isUsername = False
+                        isChosenNumberOfApples = True
+                elif isChosenNumberOfApples:
+                    if char != ";":
+                        fileChosenNumberOfApples += char
+                    else:
+                        isChosenNumberOfApples = False
+                        isChosenSpeed = True
+                elif isChosenSpeed:
+                    if char != ";":
+                        fileChosenSpeed += char
+                    else:
+                        isChosenSpeed = False
+                        isChosenPlayingFieldSize = True
+                elif isChosenPlayingFieldSize:
+                    if char != ";":
+                        fileChosenPlayingFieldSize += char
+                    else:
+                        isChosenPlayingFieldSize = False
+                        isChosenSelfCollisions = True
+                elif isChosenSelfCollisions:
+                    if char != ";":
+                        fileChosenSelfCollisions += char
+                    else:
+                        isChosenSelfCollisions = False
+                        isChosenWallCollisions = True
+                elif isChosenWallCollisions:
+                    if char != ";":
+                        fileChosenWallCollisions += char
+                    else:
+                        isChosenWallCollisions = False
+                        isScore = True
+                elif isScore:
+                    if char != "-":
+                        fileScore += char
+                    else:
+                        isScore = False
+
+        if fileChosenNumberOfApples == str(
+                chosenNumberOfApples) and fileChosenSpeed == str(
+            chosenSpeed) and fileChosenPlayingFieldSize == str(
+            chosenPlayingFieldSize) and fileChosenSelfCollisions == str(
+            chosenSelfCollisions) and fileChosenWallCollisions == str(chosenWallCollisions):
+            scoresInGamemode.append(int(fileScore))
+            usernamesInGamemode.append(fileUsername)
+    scoreFile.close()
+
+    # sorting scores
+    for i in range(len(scoresInGamemode)):
+        for j in range(len(scoresInGamemode)):
+            if i < j:
+                if scoresInGamemode[i] < scoresInGamemode[j]:
+                    temp = scoresInGamemode[j]
+                    scoresInGamemode[j] = scoresInGamemode[i]
+                    scoresInGamemode[i] = temp
+                    temp2 = usernamesInGamemode[j]
+                    usernamesInGamemode[j] = usernamesInGamemode[i]
+                    usernamesInGamemode[i] = temp2
+
+    # menu / display
+    surface.blit(font2.render("Top Scores", True, blackCoral), (182, 352))
+    surface.blit(font2.render("Top Scores", True, white), (180, 350))
+    pygame.draw.rect(surface, blackCoral, pygame.Rect(171, 396, 508, 258), border_radius=10)
+    pygame.draw.rect(surface, white, pygame.Rect(175, 400, 500, 250), border_radius=10)
+
+    pygame.draw.line(surface, lightGray, (240, 410), (240, 640), width=2)
+    pygame.draw.line(surface, lightGray, (340, 410), (340, 640), width=2)
+
+    surface.blit(leaderboardFont2.render("pos", True, raisinBlack), (185, 410))
+    surface.blit(leaderboardFont2.render("score", True, raisinBlack), (250, 410))
+    surface.blit(leaderboardFont2.render("username", True, raisinBlack), (350, 410))
+
+    pygame.draw.line(surface, lightGray, (185, 442), (650, 442), width=2)
+
+    for i in range(min(5, len(scoresInGamemode))):
+        surface.blit(leaderboardFont2.render(str(usernamesInGamemode[i]), True, darkerLogoBackgroundColor if i == 0 else blackCoral), (350, 40 * i + 450))
+        surface.blit(leaderboardFont2.render(str(scoresInGamemode[i]), True, darkerLogoBackgroundColor if i == 0 else blackCoral), (255, 40 * i + 450))
+        surface.blit(leaderboardFont2.render(str(i+1), True, darkerLogoBackgroundColor if i == 0 else blackCoral), (200, 40 * i + 450))
+
+
     return
 
 
-# Main Loop
+def doHannahBaker():
+    showScore()
+
+    # fetch old scores
+    scoreFile = open("scores.txt", "r")
+    scoreFileLines = scoreFile.readlines()
+    playerFound = False
+    for lineNum in range(len(scoreFileLines)):
+        isUsername = True
+        fileUsername = ""
+        isChosenNumberOfApples = False
+        fileChosenNumberOfApples = ""
+        isChosenSpeed = False
+        fileChosenSpeed = ""
+        isChosenPlayingFieldSize = False
+        fileChosenPlayingFieldSize = ""
+        isChosenSelfCollisions = False
+        fileChosenSelfCollisions = ""
+        isChosenWallCollisions = False
+        fileChosenWallCollisions = ""
+        isScore = False
+        fileScore = ""
+        if scoreFileLines[lineNum][0] != "#":
+            for char in scoreFileLines[lineNum]:
+                if isUsername:
+                    if char != ";":
+                        fileUsername += char
+                    else:
+                        isUsername = False
+                        isChosenNumberOfApples = True
+                elif isChosenNumberOfApples:
+                    if char != ";":
+                        fileChosenNumberOfApples += char
+                    else:
+                        isChosenNumberOfApples = False
+                        isChosenSpeed = True
+                elif isChosenSpeed:
+                    if char != ";":
+                        fileChosenSpeed += char
+                    else:
+                        isChosenSpeed = False
+                        isChosenPlayingFieldSize = True
+                elif isChosenPlayingFieldSize:
+                    if char != ";":
+                        fileChosenPlayingFieldSize += char
+                    else:
+                        isChosenPlayingFieldSize = False
+                        isChosenSelfCollisions = True
+                elif isChosenSelfCollisions:
+                    if char != ";":
+                        fileChosenSelfCollisions += char
+                    else:
+                        isChosenSelfCollisions = False
+                        isChosenWallCollisions = True
+                elif isChosenWallCollisions:
+                    if char != ";":
+                        fileChosenWallCollisions += char
+                    else:
+                        isChosenWallCollisions = False
+                        isScore = True
+                elif isScore:
+                    if char != "-":
+                        fileScore += char
+                    else:
+                        isScore = False
+
+        # update score if player is registered
+        if fileUsername == username and fileChosenNumberOfApples == str(
+                chosenNumberOfApples) and fileChosenSpeed == str(
+            chosenSpeed) and fileChosenPlayingFieldSize == str(
+            chosenPlayingFieldSize) and fileChosenSelfCollisions == str(
+            chosenSelfCollisions) and fileChosenWallCollisions == str(chosenWallCollisions):
+            playerFound = True
+            if fileScore < str(score):
+                scoreFileLines[lineNum] = fileUsername + ";" + str(fileChosenNumberOfApples) + ";" + str(
+                    chosenSpeed) + ";" + str(chosenPlayingFieldSize) + ";" + str(
+                    chosenSelfCollisions) + ";" + str(chosenWallCollisions) + ";" + str(score) + "-"
+                with open("scores.txt", "w") as file:
+                    file.writelines(scoreFileLines)
+    scoreFile.close()
+
+    # write new score if player isn't registered yet
+    if not playerFound:
+        scoreFile = open("scores.txt", "a")
+        scoreFile.write("\n" + username + ";" + str(chosenNumberOfApples) + ";" + str(chosenSpeed) + ";" + str(
+            chosenPlayingFieldSize) + ";" + str(chosenSelfCollisions) + ";" + str(
+            chosenWallCollisions) + ";" + str(score) + "-")
+        scoreFile.close()
+
+# main loop
 run = True
 while True:
     resetMainScreen()
 
-    # Snake
-    snakeTailX = [4, 3, 2, 1]
-    snakeTailY = [7, 7, 7, 7]
-    snakeHeadX = 5
-    snakeHeadY = 7
-    freespaces = 17 * 15 - len(snakeTailX) - 1
+    # set variables based on playing field size
+    if playingFieldSize[chosenPlayingFieldSize] == "10x8":
+        borderX = 9
+        borderY = 8
+        snakeGirth = 80
+        correctionX = 25
+        correctionY = 60
+        snakeTailX = [3, 2, 1, 0]
+        snakeTailY = [4, 4, 4, 4]
+        snakeHeadX = 4
+        snakeHeadY = 4
+    elif playingFieldSize[chosenPlayingFieldSize] == "24x21":
+        borderX = 23
+        borderY = 21
+        snakeGirth = 33
+        correctionX = 29
+        correctionY = 54
+        snakeTailX = [4, 3, 2, 1]
+        snakeTailY = [11, 11, 11, 11]
+        snakeHeadX = 5
+        snakeHeadY = 11
+    else:
+        borderX = 16
+        borderY = 14
+        snakeGirth = 50
+        correctionX = 1
+        correctionY = 51
+        snakeTailX = [4, 3, 2, 1]
+        snakeTailY = [7, 7, 7, 7]
+        snakeHeadX = 5
+        snakeHeadY = 7
 
-    # Reset Variables
+    # reset variables
     direction = "right"
     speedSnake = float(speedNumbers[chosenSpeed])
     numApplesWanted = int(numberOfApples[chosenNumberOfApples]) if numberOfApples[
                                                                        chosenNumberOfApples] != "custom" else 0
+    freespaces = 17 * 15 - len(snakeTailX) - 1
     score = 0
     applesX = [""] * numApplesWanted
     applesY = [""] * numApplesWanted
@@ -1011,30 +1236,10 @@ while True:
     stopSnake = False
     startTime = time.time()
 
-    # set variables based on playing field size
-    if playingFieldSize[chosenPlayingFieldSize] == "10x8":
-        borderX = 9
-        borderY = 8
-        snakeGirth = 80
-        correctionX = 25
-        correctionY = 60
-    elif playingFieldSize[chosenPlayingFieldSize] == "24x21":
-        borderX = 23
-        borderY = 21
-        snakeGirth = 33
-        correctionX = 29
-        correctionY = 54
-    else:
-        borderX = 16
-        borderY = 14
-        snakeGirth = 50
-        correctionX = 1
-        correctionY = 51
-
     resetBackground()
 
     while run:
-        # Highlight Quit Button
+        # highlight quit button
         mouse = pygame.mouse.get_pos()
         if quitBox.collidepoint(mouse):
             highlight_quit_button = True
@@ -1045,7 +1250,7 @@ while True:
         else:
             highlight_quit_button = False
 
-        # Set Direction (https://www.pygame.org/docs/ref/event.html)
+        # set direction (https://www.pygame.org/docs/ref/event.html)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -1053,26 +1258,26 @@ while True:
             if timerIsDone:
                 keys = pygame.key.get_pressed()
                 if keys[K_LEFT] or keys[K_a]:
-                    if direction != "right":
+                    if direction != "right" and direction != "left":
                         direction = "left"
                         timerIsDone = False
 
                 elif keys[K_RIGHT] or keys[K_d]:
-                    if direction != "left":
+                    if direction != "left" and direction != "right":
                         direction = "right"
                         timerIsDone = False
 
                 elif keys[K_UP] or keys[K_w]:
-                    if direction != "down":
+                    if direction != "down" and direction != "up":
                         direction = "up"
                         timerIsDone = False
 
                 elif keys[K_DOWN] or keys[K_s]:
-                    if direction != "up":
+                    if direction != "up" and direction != "down":
                         direction = "down"
                         timerIsDone = False
 
-        # Apple Spawner V2
+        # apple spawner V2
         if freespaces < numApplesWanted:
             numApplesWanted -= 1
 
@@ -1106,20 +1311,19 @@ while True:
             drawApple()
             drawSnake()
             pygame.display.flip()
-            # Timer (https://www.programiz.com/python-programming/time)
+            # timer (https://www.programiz.com/python-programming/time)
             elapsedTime = time.time() - startTime
             if elapsedTime > speedSnake:
                 timerIsDone = True
                 startTime = time.time()
 
-                # Remember Last Tail Position
+                # remember last tail position
                 oldX = snakeTailX[len(snakeTailX) - 1]
                 oldY = snakeTailY[len(snakeTailY) - 1]
 
                 resetBackground()
                 moveSnakeForward()
         else:
-            time.sleep(0.5)
             run = False
-
-    showScore()
+            time.sleep(0.5)
+            doHannahBaker()
