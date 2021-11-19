@@ -114,6 +114,7 @@ caet2 = pygame.image.load("images/caet2.png")
 shuffle = pygame.image.load("images/shuffle.jpg")
 help = pygame.image.load("images/help_icon.png")
 help = pygame.transform.scale(help, (50, 50))
+triangle_rounded = pygame.image.load("images/triangle_rounded.png")
 
 
 # letter whitelist
@@ -150,6 +151,22 @@ class Clouds:
 
 
 # functions
+def draw_polygon_alpha(surface, color, points): #https://stackoverflow.com/questions/6339057/draw-a-transparent-rectangles-and-polygons-in-pygame
+    lx, ly = zip(*points)
+    min_x, min_y, max_x, max_y = min(lx), min(ly), max(lx), max(ly)
+    target_rect = pygame.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
+    shape_surf = pygame.Surface(target_rect.size, pygame.SRCALPHA)
+    pygame.draw.polygon(shape_surf, color, [(x - min_x, y - min_y) for x, y in points])
+    surface.blit(shape_surf, target_rect)
+
+def draw_circle_alpha(surface, color, center, radius, width, draw_top_left=True):
+    target_rect = pygame.Rect(center, (0, 0)).inflate((radius * 2, radius * 2))
+    shape_surf = pygame.Surface(target_rect.size, pygame.SRCALPHA)
+    pygame.draw.circle(shape_surf, color, (radius, radius), radius, width=width, draw_top_left=draw_top_left)
+    surface.blit(shape_surf, target_rect)
+
+
+
 def resetMainScreen():
     global username, color, run
 
@@ -291,6 +308,11 @@ def resetMainScreen():
         pygame.draw.rect(surface, buttonColor, pygame.Rect(185, 700, 400, 50), border_radius=10)
         pygame.draw.rect(surface, white, pygame.Rect(188, 703, 394, 44), border_radius=10)
 
+        # help button
+        pygame.draw.rect(surface, (30, 125, 170), pygame.Rect(757, 567, 50, 50), border_radius=15)
+        pygame.draw.rect(surface, (50, 145, 190), pygame.Rect(755, 565, 50, 50), border_radius=15)
+        surface.blit(help, (755, 565))
+
         # play button clicked
         if username_done:
             # checks if username is valid + saves username / displays message in input box
@@ -404,11 +426,6 @@ def resetMainScreen():
             color = highlight
         else:
             color = color_active if active else color_inactive
-
-        # help button
-        pygame.draw.rect(surface, (30, 125, 170), pygame.Rect(757, 567, 50, 50), border_radius=15)
-        pygame.draw.rect(surface, (50, 145, 190), pygame.Rect(755, 565, 50, 50), border_radius=15)
-        surface.blit(help, (755, 565))
 
         # events
         for event in pygame.event.get():
@@ -543,6 +560,8 @@ def resetOptionsScreen():
     back_button_clicked = False
     highlight_back_button = False
     while True:
+        mouse = pygame.mouse.get_pos()
+
         surface.fill(backgroundColor)
         #grid
         for i in range(1, 18):
@@ -555,6 +574,7 @@ def resetOptionsScreen():
                     if j % 2 == 1:
                         pygame.draw.rect(surface, darkerBackgroundColor,
                                          pygame.Rect((i * 100) - 170, (j * 100)-60, 100, 100))
+
         # background quirks
         pygame.draw.rect(surface, (30, 125, 170), pygame.Rect(31, 77, 750, 100), border_radius=8)
         pygame.draw.rect(surface, (50, 145, 190), pygame.Rect(30, 76, 750, 100), border_radius=8)
@@ -567,6 +587,20 @@ def resetOptionsScreen():
         pygame.draw.rect(surface, (30, 125, 170), pygame.Rect(31, 677, 750, 100), border_radius=8)
         pygame.draw.rect(surface, (50, 145, 190), pygame.Rect(30, 676, 750, 100), border_radius=8)
 
+        # shuffle button
+        if pygame.Rect(790, 742, 50, 50).collidepoint(mouse):
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    chosenNumberOfApples = random.randint(0, len(numberOfApples) - 1)
+                    chosenSpeed = random.randint(0, len(speed) - 1)
+                    chosenPlayingFieldSize = random.randint(0, len(playingFieldSize) - 1)
+                    chosenSelfCollisions = random.randint(0, 1)
+                    chosenWallCollisions = random.randint(0, 1)
+
+        pygame.draw.rect(surface, (30, 125, 170), pygame.Rect(792, 742, 50, 50), border_radius=15)
+        pygame.draw.rect(surface, (50, 145, 190), pygame.Rect(790, 740, 50, 50), border_radius=15)
+        surface.blit(pygame.transform.scale(shuffle, (40, 40)), (795, 745))
+
         # SETTINGS
         # settings
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(oBox1), border_radius=15)
@@ -575,7 +609,6 @@ def resetOptionsScreen():
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(oBox4), border_radius=15)
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(oBox5), border_radius=15)
 
-        mouse = pygame.mouse.get_pos()
         # number of apples
         surface.blit(optionsTitleFont.render("Number of apples", True, raisinBlack), (60, 108))
         if oBox1.collidepoint(mouse):
@@ -767,20 +800,6 @@ def resetOptionsScreen():
                     exit()
         else:
             highlight_back_button = False
-        # shuffle button
-        if pygame.Rect(790, 742, 50, 50).collidepoint(mouse):
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    chosenNumberOfApples = random.randint(0, len(numberOfApples)-1)
-                    chosenSpeed = random.randint(0, len(speed)-1)
-                    chosenPlayingFieldSize = random.randint(0, len(playingFieldSize)-1)
-                    chosenSelfCollisions = random.randint(0, 1)
-                    chosenWallCollisions = random.randint(0, 1)
-
-        pygame.draw.rect(surface, (30, 125, 170), pygame.Rect(792, 742, 50, 50), border_radius=15)
-        pygame.draw.rect(surface, (50, 145, 190), pygame.Rect(790, 740, 50, 50), border_radius=15)
-        surface.blit(pygame.transform.scale(shuffle, (40, 40)), (795, 745))
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -799,32 +818,167 @@ def resetOptionsScreen():
 
 def resetHelpScreen():
     doTransition()
+    startTime = time.time()
     while True:
-        # background
+        elapsedTime = time.time() - startTime
+
         surface.fill(backgroundColor)
+        # grid
         for i in range(1, 18):
             for j in range(16):
                 if i % 2 == 0 or i == 0:
                     if j % 2 == 0 or j == 0:
                         pygame.draw.rect(surface, darkerBackgroundColor,
-                                         pygame.Rect((i * 100) - 170, (j * 100)-60, 100, 100))
+                                         pygame.Rect((i * 100) - 170, (j * 100) - 60, 100, 100))
                 else:
                     if j % 2 == 1:
                         pygame.draw.rect(surface, darkerBackgroundColor,
-                                         pygame.Rect((i * 100) - 170, (j * 100)-60, 100, 100))
+                                         pygame.Rect((i * 100) - 170, (j * 100) - 60, 100, 100))
 
-        # how to play
+        # apple
+        pygame.draw.rect(surface, color_stem, pygame.Rect(178, -44, 4, 20), border_radius=1)
+        pygame.draw.circle(surface, color_apple, (180, 2), 32)
+        pygame.draw.ellipse(surface, color_leaf, pygame.Rect(186, -50, 20, 12))
+        pygame.draw.rect(surface, color_leaf_middle, pygame.Rect(190, -46, 12, 2))
+        pygame.draw.polygon(surface, color_highlight_apple,
+                            ((180 - 100 / 50 * 7, -10 - 100 / 50 * 6),
+                             (180 - 100 / 50 * 5, -10 - 100 / 50 * 7),
+                             (180 - 100 / 50 * 3, -10 - 100 / 50 * 6),
+                             (180 - 100 / 50 * 4, -10 - 100 / 50 * 4),
+                             (180 - 100 / 50 * 7, -10 - 100 / 50 * 1),
+                             (180 - 100 / 50 * 10, -10 - 100 / 50 * 2),
+                             (180 - 100 / 50 * 9, -10 - 100 / 50 * 1),
+                             (180 - 100 / 50 * 9, -10 - 100 / 50 * 4),
+                             ))
+        pygame.draw.rect(surface, color_stem, pygame.Rect(478, 154, 4, 20), border_radius=1)
+        pygame.draw.circle(surface, color_apple, (480, 202), 32)
+        pygame.draw.ellipse(surface, color_leaf, pygame.Rect(486, 150, 20, 12))
+        pygame.draw.rect(surface, color_leaf_middle, pygame.Rect(490, 154, 12, 2))
+        pygame.draw.polygon(surface, color_highlight_apple,
+                            ((480 - 100 / 50 * 7, 190 - 100 / 50 * 6),
+                             (480 - 100 / 50 * 5, 190 - 100 / 50 * 7),
+                             (480 - 100 / 50 * 3, 190 - 100 / 50 * 6),
+                             (480 - 100 / 50 * 4, 190 - 100 / 50 * 4),
+                             (480 - 100 / 50 * 7, 190 - 100 / 50 * 1),
+                             (480 - 100 / 50 * 10, 190 - 100 / 50 * 2),
+                             (480 - 100 / 50 * 9, 190 - 100 / 50 * 1),
+                             (480 - 100 / 50 * 9, 190 - 100 / 50 * 4),
+                             ))
+        pygame.draw.rect(surface, color_stem, pygame.Rect(778, 454, 4, 20), border_radius=1)
+        pygame.draw.circle(surface, color_apple, (780, 502), 32)
+        pygame.draw.ellipse(surface, color_leaf, pygame.Rect(786, 450, 20, 12))
+        pygame.draw.rect(surface, color_leaf_middle, pygame.Rect(790, 454, 12, 2))
+        pygame.draw.polygon(surface, color_highlight_apple,
+                            ((780 - 100 / 50 * 7, 490 - 100 / 50 * 6),
+                             (780 - 100 / 50 * 5, 490 - 100 / 50 * 7),
+                             (780 - 100 / 50 * 3, 490 - 100 / 50 * 6),
+                             (780 - 100 / 50 * 4, 490 - 100 / 50 * 4),
+                             (780 - 100 / 50 * 7, 490 - 100 / 50 * 1),
+                             (780 - 100 / 50 * 10, 490 - 100 / 50 * 2),
+                             (780 - 100 / 50 * 9, 490 - 100 / 50 * 1),
+                             (780 - 100 / 50 * 9, 490 - 100 / 50 * 4),
+                             ))
+
+        # draw main screen snake body + sclera
+        pygame.draw.circle(surface, snakeColor, (30, 540), 100, draw_bottom_right=True, width=100)
+        pygame.draw.rect(surface, snakeColor, pygame.Rect(0, 540, 30, 100))
+        pygame.draw.rect(surface, snakeColor,
+                         pygame.Rect(30, 360 - 936 / 5, 100, 185 + 936 / 5),
+                         border_top_left_radius=50,
+                         border_top_right_radius=50)
+
+        pygame.draw.circle(surface, white, ((30) + int(100 / 50 * 35),
+                                            (363 - 936 / 5) + int(100 / 50 * 15)),
+                           int(100 / 50 * 10))
+        pygame.draw.circle(surface, white, ((30) + int(100 / 50 * 15),
+                                            (363 - 936 / 5) + int(100 / 50 * 15)),
+                           int(100 / 50 * 10))
+
+        pygame.draw.circle(surface, snakeColor, (841, 330), 110, draw_bottom_left=True, width=100)
+        pygame.draw.rect(surface, snakeColor, pygame.Rect(841, 340, 20, 100))
+        pygame.draw.rect(surface, snakeColor, pygame.Rect(731, 140, 100, 190))
+        pygame.draw.circle(surface, snakeColor, (731, 140), 100, draw_top_right=True, width=100)
+        pygame.draw.rect(surface, snakeColor, pygame.Rect(631, 40, 100, 100))
+        pygame.draw.circle(surface, snakeColor, (631, 40), 100, draw_bottom_left=True, width=100)
+        pygame.draw.rect(surface, snakeColor, pygame.Rect(531, 0, 100, 40))
+
+        # draw iris in the direction of mouse (+ distance)
+        if (pygame.mouse.get_focused()):
+            mouse = pygame.mouse.get_pos()
+        else:
+            mouse = [480, 190]
+        middle_point = [100, 393 - 936 / 5]
+        direction_mouse = mouse - Vector2(middle_point[0], middle_point[1])
+        radius, angle = direction_mouse.as_polar()
+        angle_rad = math.radians(angle + 90)
+        point = [middle_point[0] + (10 / 1000 * radius + 4) * math.sin(angle_rad),
+                 middle_point[1] - (10 / 1000 * radius + 4) * math.cos(angle_rad)]
+
+        pygame.draw.circle(surface, black, (point[0], point[1]), 7)
+
+        middle_point = [60, 393 - 936 / 5]
+        direction_mouse = mouse - Vector2(middle_point[0], middle_point[1])
+        radius, angle = direction_mouse.as_polar()
+        angle_rad = math.radians(angle + 90)
+        point = [middle_point[0] + (10 / 1000 * radius + 4) * math.sin(angle_rad),
+                 middle_point[1] - (10 / 1000 * radius + 4) * math.cos(angle_rad)]
+
+        pygame.draw.circle(surface, black, (point[0], point[1]), 7)
+
+
+        # this is snek
+        font123 = pygame.font.SysFont(None, 50)
+        text_surface = font123.render("This is snek.", True, white)
+        text_surface.set_alpha(min(255, elapsedTime*250))
+        surface.blit(text_surface, (140, 70))
+
+        draw_circle_alpha(surface, (255, 255, 255, min(255, elapsedTime*250)), (91, 100), 20, 10, True)
+
+        shape_surf = pygame.Surface(pygame.Rect(91, 80, 30, 10).size, pygame.SRCALPHA)
+        pygame.draw.rect(shape_surf, (255, 255, 255, min(255, elapsedTime*250)), shape_surf.get_rect(), border_top_right_radius=4, border_bottom_right_radius=4)
+        surface.blit(shape_surf, pygame.Rect(91, 80, 30, 10))
+
+        rounded_triangle = pygame.transform.rotate(pygame.transform.scale(triangle_rounded, (30, 20)), 180)
+        rounded_triangle.set_alpha(min(255, elapsedTime*250))
+        surface.blit(rounded_triangle, (61, 110))
+
+        shape_surf = pygame.Surface(pygame.Rect(71, 100, 10, 10).size, pygame.SRCALPHA)
+        pygame.draw.rect(shape_surf, (255, 255, 255, min(255, elapsedTime * 250)), shape_surf.get_rect())
+        surface.blit(shape_surf, pygame.Rect(71, 100, 10, 10))
+
+        # they like apples
+        font123 = pygame.font.SysFont(None, 50)
+        text_surface = font123.render("They like apples.", True, white)
+        text_surface.set_alpha(min(255, (elapsedTime-2) * 250))
+        surface.blit(text_surface, (160, 120))
+
+
+
+
+
+        #draw_polygon_alpha(surface, (255, 255, 255, min(255, elapsedTime*150)), (
+        #    (90, 80),
+        #    (120, 80),
+        #    (120, 90),
+        #    (90, 90)
+        #))
+#
+        #draw_polygon_alpha(surface, (255, 255, 255, min(255, elapsedTime * 150)), (
+        #    (70, 100),
+        #    (80, 100),
+        #    (80, 120),
+        #    (70, 120)
+        #))
 
 
 
         pygame.display.flip()
-        mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                print(mouse)
+                continue
 
 
 def doTransition():
@@ -841,13 +995,11 @@ def doTransition():
         elif elapsedTime2 < 3:
             amountToMove = (800 / 70 * elapsedTime2)**2 + amountMovedBack
 
-
         if elapsedTime1 < 3:
             amountToMoveSnake = (800 / 8 * elapsedTime1)**1.2
 
         if elapsedTime1 > 3.5:
             return
-
 
         surface.fill(backgroundColor)
         # grid
@@ -980,6 +1132,16 @@ def doTransition():
         pygame.draw.rect(surface, buttonColor, pygame.Rect(185, 700+amountToMove/1.5, 400, 50), border_radius=10)
         pygame.draw.rect(surface, white, pygame.Rect(188, 703+amountToMove/1.5, 394, 44), border_radius=10)
 
+        # username
+        if username == "":
+            username_input_color = (200, 200, 200)
+            txt_surface = font2.render("Username", True, username_input_color)
+        else:
+            username_input_color = raisinBlack
+            txt_surface = font2.render(username, True, username_input_color)
+        input_box.w = 400
+        surface.blit(txt_surface, (input_box.x + 10, input_box.y + 10+amountToMove/1.5))
+        pygame.draw.rect(surface, color, pygame.Rect(185, 700+amountToMove/1.5, 400, 50), 4, border_radius=10)
 
         # draws buttons
         pygame.draw.rect(surface, buttonShadow, pygame.Rect(80, 700+amountToMove/1.5, 95, 50), border_radius=10)
@@ -1000,6 +1162,9 @@ def doTransition():
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 continue
+            elif event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
 
         pygame.display.flip()
 
