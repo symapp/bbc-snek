@@ -39,3 +39,15 @@ asdfasdfjasödfjölksam;1;4;1;True;True;1-
 asdfasdfjasödfjölksam;1;1;1;True;True;0-
 adf;1;1;1;True;True;0-
 adf;2;2;1;True;True;8-
+pop;0;0;2;False;False;0-
+pop;0;4;2;False;False;0-
+pop;5;3;2;False;False;20-
+pop;5;6;2;False;False;0-
+pop;5;1;2;False;False;0-
+pop;5;7;2;False;False;288-
+popsdfgsdfgsjdfljslllm;5;7;2;False;False;109-
+duj;1;4;1;True;True;0-
+hhh;1;4;1;True;True;0-
+d;1;4;1;True;True;14-
+d;0;0;2;0;1;0-
+ASDFLHHH;1;4;1;True;True;0-
