@@ -1,1 +1,6 @@
 #(username);(chosenNumberOfApples);(chosenSpeed);(chosenPlayingFieldSize);(chosenSelfCollisions);(chosenWallCollisions);(score)-
+
+asdf;1;4;1;True;True;5-dfasf;1;4;1;True;True;0-
+fasdfas;1;4;1;True;True;0-
+asd;1;4;1;True;True;0-
+adsf;1;4;1;True;True;3-
