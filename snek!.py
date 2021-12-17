@@ -56,7 +56,7 @@ mainFontTutorial = pygame.font.SysFont(None, 50)
 smallerFontTutorial = pygame.font.SysFont(None, 45)
 evenSmallerFontTutorial = pygame.font.SysFont(None, 35)
 
-# constant variables
+# other variables
 username = ""
 input_box = pygame.Rect(185, 700, 400, 50)
 color_inactive = (100, 100, 100)
@@ -99,11 +99,14 @@ help = pygame.transform.scale(help, (50, 50))
 triangle_rounded = pygame.image.load("images/triangle_rounded.png")
 wasd = pygame.image.load("images/WASDkeys.png")
 arrowKeys = pygame.image.load("images/arrowkeys.png")
+banana = pygame.image.load("images/banana.png")
+banana2 = pygame.image.load("images/banana2.png")
+watermelon = pygame.image.load("images/watermelon.png")
 
-# default options list
-numberOfApples = ["0", "1", "5", "10", "30", "50"]
-defaultChosenNumberOfApples = 1
-chosenNumberOfApples = defaultChosenNumberOfApples
+# options list
+numberOfFruits = ["0", "1", "5", "10", "30", "50"]
+defaultChosenNumberOfFruits = 1
+chosenNumberOfFruits = defaultChosenNumberOfFruits
 speed = ["cansir", "impossible", "hard", "harder", "default", "easier", "easy", "ez pz"]
 speedNumbers = ["0.0001", "1", "0.05", "0.1", "0.2", "0.3", "0.5", "0.02"]
 defaultChosenSpeed = 4
@@ -113,11 +116,15 @@ defaultChosenPlayingFieldSize = 1
 chosenPlayingFieldSize = defaultChosenPlayingFieldSize
 chosenSelfCollisions = True
 chosenWallCollisions = True
+fruitList = ["apples", "bananas", "bananer", "watermelon"]
+defaultChosenFruit = 0
+chosenFruit = defaultChosenFruit
 
 # letter whitelist
 letterWhitelist = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
                    "u", "v", "w", "x", "y", "z", "_", "-", ".", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "ö",
                    "ä", "ü"]
+
 
 # classes
 class SunBeams:
@@ -535,7 +542,7 @@ def resetBackground():
     # quit button
     if quit_button_clicked:
         drawSnake()
-        drawApple()
+        drawFruit()
         pygame.draw.rect(surface, buttonColor, quitBoxShadow, border_radius=10)
         quit_font = pygame.font.Font(None, 40)
         surface.blit(quit_font.render("Quit", True, white), (768, 15))
@@ -565,12 +572,15 @@ def resetBackground():
 
 
 def resetOptionsScreen():
-    global chosenNumberOfApples, chosenSpeed, chosenPlayingFieldSize, chosenSelfCollisions, chosenWallCollisions
+    global chosenNumberOfFruits, chosenSpeed, chosenPlayingFieldSize, chosenSelfCollisions, chosenWallCollisions, \
+        chosenFruit
 
     # start variables
     back_button_clicked = False
     highlight_back_button = False
-    hoveringOverOption = [False]*5
+    hoveringOverOption = [False] * 6
+    fruitX = 465
+    fruitY = 125
 
     while True:
         mouse = pygame.mouse.get_pos()
@@ -604,11 +614,12 @@ def resetOptionsScreen():
         if pygame.Rect(790, 742, 50, 50).collidepoint(mouse):
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    chosenNumberOfApples = random.randint(0, len(numberOfApples) - 1)
+                    chosenNumberOfFruits = random.randint(0, len(numberOfFruits) - 1)
                     chosenSpeed = random.randint(0, len(speed) - 1)
                     chosenPlayingFieldSize = random.randint(0, len(playingFieldSize) - 1)
                     chosenSelfCollisions = random.randint(0, 1)
                     chosenWallCollisions = random.randint(0, 1)
+                    chosenFruit = random.randint(0, len(fruitList) - 1)
 
         pygame.draw.rect(surface, (30, 125, 170), pygame.Rect(792, 742, 50, 50), border_radius=15)
         pygame.draw.rect(surface, (50, 145, 190), pygame.Rect(790, 740, 50, 50), border_radius=15)
@@ -622,8 +633,8 @@ def resetOptionsScreen():
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(oBox4), border_radius=15)
         pygame.draw.rect(surface, darkerBackgroundColor, pygame.Rect(oBox5), border_radius=15)
 
-        # number of apples
-        surface.blit(optionsTitleFont.render("Number of apples", True, raisinBlack), (60, 108))
+        # number of
+        surface.blit(optionsTitleFont.render("Number of", True, raisinBlack), (60, 108))
         if oBox1.collidepoint(mouse):
             # cursor
             hoveringOverOption[0] = True
@@ -634,31 +645,106 @@ def resetOptionsScreen():
                     pygame.quit()
                     exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 4: chosenNumberOfApples = min(chosenNumberOfApples + 1, len(numberOfApples) - 1)
-                    if event.button == 5: chosenNumberOfApples = max(chosenNumberOfApples - 1, 0)
+                    if event.button == 4: chosenNumberOfFruits = min(chosenNumberOfFruits + 1, len(numberOfFruits) - 1)
+                    if event.button == 5: chosenNumberOfFruits = max(chosenNumberOfFruits - 1, 0)
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
-                        chosenNumberOfApples = min(chosenNumberOfApples + 1, len(numberOfApples) - 1)
+                        chosenNumberOfFruits = min(chosenNumberOfFruits + 1, len(numberOfFruits) - 1)
                     if event.key == pygame.K_DOWN:
-                        chosenNumberOfApples = max(chosenNumberOfApples - 1, 0)
+                        chosenNumberOfFruits = max(chosenNumberOfFruits - 1, 0)
         else:
             # cursor
             hoveringOverOption[0] = False
-        chosenNumberOfApplesRender = optionsFont.render(numberOfApples[chosenNumberOfApples], True,
-                                                        raisinBlack if numberOfApples[
-                                                                           chosenNumberOfApples] == "1" else white)
-        widthNumberOfApplesRender = chosenNumberOfApplesRender.get_width()
-        surface.blit(chosenNumberOfApplesRender, (600 - widthNumberOfApplesRender / 2, 113))
+        chosenNumberOfFruitsRender = optionsFont.render(numberOfFruits[chosenNumberOfFruits], True,
+                                                        raisinBlack if numberOfFruits[
+                                                                           chosenNumberOfFruits] == "1" else white)
+        widthNumberOfFruitsRender = chosenNumberOfFruitsRender.get_width()
+        surface.blit(chosenNumberOfFruitsRender, (600 - widthNumberOfFruitsRender / 2, 113))
 
-        for i in range(len(numberOfApples)):
-            if chosenNumberOfApples == i:
+        for i in range(len(numberOfFruits)):
+            if chosenNumberOfFruits == i:
                 pygame.draw.rect(surface, white if i != 1 else raisinBlack,
-                                 pygame.Rect(495 + i * 210 / len(numberOfApples), 154, 200 / len(numberOfApples), 10),
+                                 pygame.Rect(495 + i * 210 / len(numberOfFruits), 154, 200 / len(numberOfFruits), 10),
                                  border_radius=4)
             else:
                 pygame.draw.rect(surface, white if i != 1 else raisinBlack,
-                                 pygame.Rect(500 + i * 210 / len(numberOfApples), 157, 200 / len(numberOfApples) - 10,
+                                 pygame.Rect(500 + i * 210 / len(numberOfFruits), 157, 200 / len(numberOfFruits) - 10,
                                              5), border_radius=2)
+
+        # fruits
+        fruitText = optionsTitleFont.render(fruitList[chosenFruit], True, raisinBlack)
+        oBox6 = pygame.Rect(237, 100, 200, 50)
+        pygame.draw.rect(surface, darkerBackgroundColor, oBox6,
+                         border_radius=10, width=3)
+        surface.blit(fruitText, (337 - fruitText.get_width() / 2, 108))
+        if oBox6.collidepoint(mouse):
+            # cursor
+            hoveringOverOption[5] = True
+
+            # events
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 4: chosenFruit = min(chosenFruit + 1, len(fruitList) - 1)
+                    if event.button == 5: chosenFruit = max(chosenFruit - 1, 0)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        chosenFruit = min(chosenFruit + 1, len(fruitList) - 1)
+                    if event.key == pygame.K_DOWN:
+                        chosenFruit = max(chosenFruit - 1, 0)
+        else:
+            # cursor
+            hoveringOverOption[5] = False
+
+        for i in range(len(fruitList)):
+            if chosenFruit == i:
+                pygame.draw.rect(surface, white if i != 0 else raisinBlack,
+                                 pygame.Rect(235 + i * 200 / len(fruitList), 154, 200 / len(fruitList), 8),
+                                 border_radius=4)
+            else:
+                pygame.draw.rect(surface, white if i != 0 else raisinBlack,
+                                 pygame.Rect(240 + i * 200 / len(fruitList), 157, 200 / len(fruitList) - 8,
+                                             4), border_radius=2)
+
+        # preview
+        if hoveringOverOption[5]:
+            if chosenFruit == 0:
+                pygame.draw.rect(surface, color_stem,
+                                 pygame.Rect(fruitX - 1, fruitY - 18, 2, 10),
+                                 border_radius=1)
+                pygame.draw.circle(surface, color_apple, (fruitX, fruitY + 5), 16)
+                pygame.draw.ellipse(surface, color_leaf, pygame.Rect((fruitX + 3, fruitY - 20, 10, 6)))
+                pygame.draw.rect(surface, color_leaf_middle, pygame.Rect(fruitX + 5, fruitY - 18, 6, 1))
+                pygame.draw.polygon(surface, color_highlight_apple, ((fruitX - 7, fruitY - 6),
+                                                                     (fruitX - 5, fruitY - 7),
+                                                                     (fruitX - 3, fruitY - 6),
+                                                                     (fruitX - 4, fruitY - 4),
+                                                                     (fruitX - 7, fruitY - 1),
+                                                                     (fruitX - 10, fruitY - 2),
+                                                                     (fruitX - 9, fruitY - 1),
+                                                                     (fruitX - 9, fruitY - 4),))
+            elif chosenFruit == 1:
+                surface.blit(
+                    pygame.transform.rotate(pygame.transform.scale(banana,
+                                                                   (int(512 / (512 / 50)),
+                                                                    int(257 / (512 / 50)))),
+                                            340), (fruitX - 28, fruitY - 22))
+            elif chosenFruit == 2:
+                surface.blit(
+                    pygame.transform.rotate(
+                        pygame.transform.scale(banana2,
+                                               (int(216 / (250 / 50)),
+                                                int(216 / (250 / 50)))),
+                        0), (fruitX - 20, fruitY - 22))
+            elif chosenFruit == 3:
+                surface.blit(
+                    pygame.transform.rotate(
+                        pygame.transform.scale(watermelon,
+                                               (int(216 / (260 / 50)),
+                                                int(216 / (260 / 50)))),
+                        0), (fruitX - 20, fruitY - 22))
 
         # speed
         surface.blit(optionsTitleFont.render("Snake speed", True, raisinBlack), (60, 258))
@@ -787,7 +873,7 @@ def resetOptionsScreen():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
                         chosenWallCollisions = True
-                    if event.key == pygame.K_DOWM:
+                    if event.key == pygame.K_DOWN:
                         chosenWallCollisions = False
         else:
             # hovering
@@ -866,11 +952,12 @@ def resetOptionsScreen():
                 exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == K_SPACE:
-                    chosenNumberOfApples = defaultChosenNumberOfApples
+                    chosenNumberOfFruits = defaultChosenNumberOfFruits
                     chosenSpeed = defaultChosenSpeed
                     chosenPlayingFieldSize = defaultChosenPlayingFieldSize
                     chosenSelfCollisions = True
                     chosenWallCollisions = True
+                    chosenFruit = defaultChosenFruit
 
         pygame.display.flip()
 
@@ -1488,8 +1575,8 @@ def showScore():
 
 
 def drawSnake():
-    global snakeGirth, correctionX, correctionY, snakeTailX, snakeTailY, snakeHeadX, snakeHeadY, oldX, oldY,\
-        nearestAppleDistance, applesX, applesY
+    global snakeGirth, correctionX, correctionY, snakeTailX, snakeTailY, snakeHeadX, snakeHeadY, oldX, oldY, \
+        nearestFruitDistance, fruitsX, fruitsY
 
     for i in reversed(range(len(snakeTailX))):
         temp_x = snakeTailX[i]
@@ -1821,26 +1908,26 @@ def drawSnake():
         middlePoint2 = [(snakeHeadX * snakeGirth + correctionX) + int(snakeGirth / 50 * 35),
                         (snakeHeadY * snakeGirth + correctionY) + int(snakeGirth / 50 * 35)]
 
-    # find distance to apple
-    if chosenNumberOfApples != 0:
-        xd = snakeHeadX - applesX[0]
-        yd = snakeHeadY - applesY[0]
-        nearestAppleDistance = math.sqrt(xd * xd + yd * yd)
-        nearestAppleIndex = 0
-        for i in range(len(applesX)):
-            xd = snakeHeadX - applesX[i]
-            yd = snakeHeadY - applesY[i]
+    # find distance to fruit
+    if chosenNumberOfFruits != 0:
+        xd = snakeHeadX - fruitsX[0]
+        yd = snakeHeadY - fruitsY[0]
+        nearestFruitDistance = math.sqrt(xd * xd + yd * yd)
+        nearestFruitIndex = 0
+        for i in range(len(fruitsX)):
+            xd = snakeHeadX - fruitsX[i]
+            yd = snakeHeadY - fruitsY[i]
             distance = math.sqrt(xd * xd + yd * yd)
-            if distance < nearestAppleDistance:
-                nearestAppleDistance = distance
-                nearestAppleIndex = i
+            if distance < nearestFruitDistance:
+                nearestFruitDistance = distance
+                nearestFruitIndex = i
 
-        # find direction, angle from eyes to nearest apple
-        direction_eyes1 = [(applesX[nearestAppleIndex] * snakeGirth + snakeGirth / 2 + correctionX),
-                           (applesY[nearestAppleIndex] * snakeGirth + snakeGirth / 2 + correctionY)] - Vector2(
+        # find direction, angle from eyes to nearest fruit
+        direction_eyes1 = [(fruitsX[nearestFruitIndex] * snakeGirth + snakeGirth / 2 + correctionX),
+                           (fruitsY[nearestFruitIndex] * snakeGirth + snakeGirth / 2 + correctionY)] - Vector2(
             middlePoint1[0], middlePoint1[1])
-        direction_eyes2 = [(applesX[nearestAppleIndex] * snakeGirth + snakeGirth / 2 + correctionX),
-                           (applesY[nearestAppleIndex] * snakeGirth + snakeGirth / 2 + correctionY)] - Vector2(
+        direction_eyes2 = [(fruitsX[nearestFruitIndex] * snakeGirth + snakeGirth / 2 + correctionX),
+                           (fruitsY[nearestFruitIndex] * snakeGirth + snakeGirth / 2 + correctionY)] - Vector2(
             middlePoint2[0], middlePoint2[1])
 
     else:
@@ -1853,7 +1940,7 @@ def drawSnake():
     angle_rad1 = math.radians(angle1 + 90)
     angle_rad2 = math.radians(angle2 + 90)
 
-    # define point looking to nearest apple from each eye and draw the iris
+    # define point looking to nearest fruit from each eye and draw the iris
     point1 = [middlePoint1[0] + (snakeGirth / 50 * 5) * math.sin(angle_rad1),
               middlePoint1[1] - (snakeGirth / 50 * 5) * math.cos(angle_rad1)]
     point2 = [middlePoint2[0] + (snakeGirth / 50 * 5) * math.sin(angle_rad2),
@@ -1866,48 +1953,77 @@ def drawSnake():
                        int(snakeGirth / 50 * 4))
 
 
-def drawApple():
+def drawFruit():
     global snakeGirth, correctionX, correctionY
-    for i in range(numApplesWanted):
-        if applesX[i] != "":
-            # apple design
-            pygame.draw.rect(surface, color_stem,
-                             pygame.Rect((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 1,
-                                         (applesY[
-                                              i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 18,
-                                         snakeGirth / 50 * 2, snakeGirth / 50 * 10),
-                             border_radius=1)
-            pygame.draw.circle(surface, color_apple, ((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX), (
-                    applesY[i] * snakeGirth + snakeGirth / 2) + snakeGirth / 50 * 6 + correctionY),
-                               snakeGirth / 50 * 16)
-            pygame.draw.ellipse(surface, color_leaf,
-                                pygame.Rect(
-                                    (applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) + snakeGirth / 50 * 3,
-                                    (applesY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 20,
-                                    snakeGirth / 50 * 10, snakeGirth / 50 * 6))
-            pygame.draw.rect(surface, color_leaf_middle,
-                             pygame.Rect((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) + snakeGirth / 50 * 5,
-                                         (applesY[
-                                              i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 18,
-                                         snakeGirth / 50 * 6, snakeGirth / 50 * 1))
-            pygame.draw.polygon(surface, color_highlight_apple,
-                                (((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 7,
-                                  (applesY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 6),
-                                 ((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 5,
-                                  (applesY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 7),
-                                 ((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 3,
-                                  (applesY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 6),
-                                 ((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 4,
-                                  (applesY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 4),
-                                 ((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 7,
-                                  (applesY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 1),
-                                 ((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 10,
-                                  (applesY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 2),
-                                 ((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 9,
-                                  (applesY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 1),
-                                 ((applesX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 9,
-                                  (applesY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 4),
-                                 ))
+    for i in range(numFruitsWanted):
+        if fruitsX[i] != "":
+            if chosenFruit == 0:
+                # apple design
+                pygame.draw.rect(surface, color_stem,
+                                 pygame.Rect(
+                                     (fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 1,
+                                     (fruitsY[
+                                          i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 18,
+                                     snakeGirth / 50 * 2, snakeGirth / 50 * 10),
+                                 border_radius=1)
+                pygame.draw.circle(surface, color_apple, ((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX), (
+                        fruitsY[i] * snakeGirth + snakeGirth / 2) + snakeGirth / 50 * 6 + correctionY),
+                                   snakeGirth / 50 * 16)
+                pygame.draw.ellipse(surface, color_leaf,
+                                    pygame.Rect(
+                                        (fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) + snakeGirth / 50 * 3,
+                                        (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 20,
+                                        snakeGirth / 50 * 10, snakeGirth / 50 * 6))
+                pygame.draw.rect(surface, color_leaf_middle,
+                                 pygame.Rect(
+                                     (fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) + snakeGirth / 50 * 5,
+                                     (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 18,
+                                     snakeGirth / 50 * 6, snakeGirth / 50 * 1))
+                pygame.draw.polygon(surface, color_highlight_apple,
+                                    (((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 7,
+                                      (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 6),
+                                     ((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 5,
+                                      (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 7),
+                                     ((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 3,
+                                      (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 6),
+                                     ((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 4,
+                                      (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 4),
+                                     ((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 7,
+                                      (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 1),
+                                     ((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 10,
+                                      (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 2),
+                                     ((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 9,
+                                      (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 1),
+                                     ((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 9,
+                                      (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 4),
+                                     ))
+            elif chosenFruit == 1:
+                surface.blit(
+                    pygame.transform.rotate(
+                        pygame.transform.scale(banana,
+                                               (int(512 / (512 / snakeGirth)),
+                                                int(257 / (512 / snakeGirth)))),
+                        340),
+                    ((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 28,
+                     (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 22))
+            elif chosenFruit == 2:
+                surface.blit(
+                    pygame.transform.rotate(
+                        pygame.transform.scale(banana2,
+                                               (int(216 / (250 / snakeGirth)),
+                                                int(216 / (250 / snakeGirth)))),
+                        0),
+                    ((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 20,
+                     (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 22))
+            elif chosenFruit == 3:
+                surface.blit(
+                    pygame.transform.rotate(
+                        pygame.transform.scale(watermelon,
+                                               (int(216 / (260 / snakeGirth)),
+                                                int(216 / (260 / snakeGirth)))),
+                        0),
+                    ((fruitsX[i] * snakeGirth + snakeGirth / 2 + correctionX) - snakeGirth / 50 * 20,
+                     (fruitsY[i] * snakeGirth + snakeGirth / 2 + correctionY) - snakeGirth / 50 * 22))
 
 
 def moveSnakeForward():
@@ -1972,8 +2088,8 @@ def drawLeaderboard(x, y):
     for lineNum in range(len(scoreFileLines)):
         isUsername = True
         fileUsername = ""
-        isChosenNumberOfApples = False
-        fileChosenNumberOfApples = ""
+        isChosenNumberOfFruits = False
+        fileChosenNumberOfFruits = ""
         isChosenSpeed = False
         fileChosenSpeed = ""
         isChosenPlayingFieldSize = False
@@ -1991,12 +2107,12 @@ def drawLeaderboard(x, y):
                         fileUsername += char
                     else:
                         isUsername = False
-                        isChosenNumberOfApples = True
-                elif isChosenNumberOfApples:
+                        isChosenNumberOfFruits = True
+                elif isChosenNumberOfFruits:
                     if char != ";":
-                        fileChosenNumberOfApples += char
+                        fileChosenNumberOfFruits += char
                     else:
-                        isChosenNumberOfApples = False
+                        isChosenNumberOfFruits = False
                         isChosenSpeed = True
                 elif isChosenSpeed:
                     if char != ";":
@@ -2028,8 +2144,8 @@ def drawLeaderboard(x, y):
                     else:
                         isScore = False
 
-        if fileChosenNumberOfApples == str(
-                chosenNumberOfApples) and fileChosenSpeed == str(
+        if fileChosenNumberOfFruits == str(
+                chosenNumberOfFruits) and fileChosenSpeed == str(
             chosenSpeed) and fileChosenPlayingFieldSize == str(
             chosenPlayingFieldSize) and fileChosenSelfCollisions == str(
             chosenSelfCollisions) and fileChosenWallCollisions == str(chosenWallCollisions):
@@ -2087,8 +2203,8 @@ def doHannahBaker():
     for lineNum in range(len(scoreFileLines)):
         isUsername = True
         fileUsername = ""
-        isChosenNumberOfApples = False
-        fileChosenNumberOfApples = ""
+        isChosenNumberOfFruits = False
+        fileChosenNumberOfFruits = ""
         isChosenSpeed = False
         fileChosenSpeed = ""
         isChosenPlayingFieldSize = False
@@ -2106,12 +2222,12 @@ def doHannahBaker():
                         fileUsername += char
                     else:
                         isUsername = False
-                        isChosenNumberOfApples = True
-                elif isChosenNumberOfApples:
+                        isChosenNumberOfFruits = True
+                elif isChosenNumberOfFruits:
                     if char != ";":
-                        fileChosenNumberOfApples += char
+                        fileChosenNumberOfFruits += char
                     else:
-                        isChosenNumberOfApples = False
+                        isChosenNumberOfFruits = False
                         isChosenSpeed = True
                 elif isChosenSpeed:
                     if char != ";":
@@ -2144,14 +2260,14 @@ def doHannahBaker():
                         isScore = False
 
         # update score if player is registered
-        if fileUsername == username and fileChosenNumberOfApples == str(
-                chosenNumberOfApples) and fileChosenSpeed == str(
+        if fileUsername == username and fileChosenNumberOfFruits == str(
+                chosenNumberOfFruits) and fileChosenSpeed == str(
             chosenSpeed) and fileChosenPlayingFieldSize == str(
             chosenPlayingFieldSize) and fileChosenSelfCollisions == str(
             chosenSelfCollisions) and fileChosenWallCollisions == str(chosenWallCollisions):
             playerFound = True
             if fileScore < str(score):
-                scoreFileLines[lineNum] = fileUsername + ";" + str(fileChosenNumberOfApples) + ";" + str(
+                scoreFileLines[lineNum] = "\n" + fileUsername + ";" + str(fileChosenNumberOfFruits) + ";" + str(
                     chosenSpeed) + ";" + str(chosenPlayingFieldSize) + ";" + str(
                     chosenSelfCollisions) + ";" + str(chosenWallCollisions) + ";" + str(score) + "-"
                 with open("scores.txt", "w") as file:
@@ -2161,7 +2277,7 @@ def doHannahBaker():
     # write new score if player isn't registered yet
     if not playerFound:
         scoreFile = open("scores.txt", "a")
-        scoreFile.write("\n" + username + ";" + str(chosenNumberOfApples) + ";" + str(chosenSpeed) + ";" + str(
+        scoreFile.write("\n" + username + ";" + str(chosenNumberOfFruits) + ";" + str(chosenSpeed) + ";" + str(
             chosenPlayingFieldSize) + ";" + str(chosenSelfCollisions) + ";" + str(
             chosenWallCollisions) + ";" + str(score) + "-")
         scoreFile.close()
@@ -2216,14 +2332,14 @@ while True:
     # reset variables
     direction = "right"
     speedSnake = float(speedNumbers[chosenSpeed])
-    numApplesWanted = int(numberOfApples[chosenNumberOfApples]) if numberOfApples[
-                                                                       chosenNumberOfApples] != "custom" else 0
+    numFruitsWanted = int(numberOfFruits[chosenNumberOfFruits]) if numberOfFruits[
+                                                                       chosenNumberOfFruits] != "custom" else 0
     freespaces = 17 * 15 - len(snakeTailX) - 1
     score = 0
-    nearestApple = 0
-    nearestAppleDistance = (0, 0)
-    applesX = [8008] * numApplesWanted
-    applesY = [8008] * numApplesWanted
+    nearestFruit = 0
+    nearestFruitDistance = (0, 0)
+    fruitsX = [8008] * numFruitsWanted
+    fruitsY = [8008] * numFruitsWanted
     highlight_quit_button = False
     quit_button_clicked = False
     timerIsDone = False
@@ -2272,38 +2388,38 @@ while True:
                         direction = "down"
                         timerIsDone = False
 
-        # apple spawner V2
-        if freespaces < numApplesWanted:
-            numApplesWanted -= 1
+        # fruit spawner V2
+        if freespaces < numFruitsWanted:
+            numFruitsWanted -= 1
 
-        for i in range(len(applesX)):
-            if applesX[i] == 8008:
+        for i in range(len(fruitsX)):
+            if fruitsX[i] == 8008:
                 tmpX = random.randint(0, borderX)
                 tmpY = random.randint(0, borderY)
                 if tmpX != snakeHeadX or tmpY != snakeHeadY:
-                    applesX[i] = tmpX
-                    applesY[i] = tmpY
+                    fruitsX[i] = tmpX
+                    fruitsY[i] = tmpY
 
-            for a in range(len(applesX)):
-                if applesX[a] == snakeHeadX and applesY[a] == snakeHeadY:
-                    applesX[a] = 8008
-                    applesY[a] = 8008
+            for a in range(len(fruitsX)):
+                if fruitsX[a] == snakeHeadX and fruitsY[a] == snakeHeadY:
+                    fruitsX[a] = 8008
+                    fruitsY[a] = 8008
                     score += 1
                     snakeTailX.append(oldX)
                     snakeTailY.append(oldY)
                 else:
                     for i in range(len(snakeTailX)):
-                        if applesX[a] == snakeTailX[i] and applesY[a] == snakeTailY[i]:
-                            applesX[a] = 8008
-                            applesY[a] = 8008
-                    for j in range(len(applesX)):
+                        if fruitsX[a] == snakeTailX[i] and fruitsY[a] == snakeTailY[i]:
+                            fruitsX[a] = 8008
+                            fruitsY[a] = 8008
+                    for j in range(len(fruitsX)):
                         if j != a:
-                            if applesX[a] == applesX[j] and applesY[a] == applesY[j]:
-                                applesX[a] = 8008
-                                applesY[a] = 8008
+                            if fruitsX[a] == fruitsX[j] and fruitsY[a] == fruitsY[j]:
+                                fruitsX[a] = 8008
+                                fruitsY[a] = 8008
 
         if not doCollisionCheck() and not stopSnake:
-            drawApple()
+            drawFruit()
             drawSnake()
             pygame.display.flip()
             # timer
